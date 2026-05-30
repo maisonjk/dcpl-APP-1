@@ -1,13 +1,13 @@
 import { UserStats, ScriptureVerse, Prayer, Mission, PathStage } from "./types";
 
 export const DEFAULT_USER_STATS: UserStats = {
-  username: "David Miller",
-  avatarUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuCIFc5E6xWc8_IKkfn55bSOFY-7k9hGEeagiorKDQF7zsGteX3ohDQRAGmxM0pW_CJIix9nOSqBTGzYAWwQw1lwvARhA7XGx_MHt6mOiNkDat9hiv6Ze-KxdEfG4vGzDvNAdHDewf8VbAZ3kHy9DG3e_MQoZ05A2S0EiAd8esDxIOlmV5fsfPSu56A2QXDI-kTKBEvBZfsRJM0-_ZSoKTXhiKo0eJ-lgQtgUFINX-WyhMcts74qyPQJO_hECfhmpt7jhLfCjdj0GAo",
-  completedMissionsCount: 12,
-  currentStreak: 5,
-  level: 12,
+  username: "Seeker",
+  avatarUrl: "",
+  completedMissionsCount: 0,
+  currentStreak: 0,
+  level: 1,
   checklist: {
-    prayer: true,
+    prayer: false,
     word: false,
     obedience: false,
   },

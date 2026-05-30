@@ -569,11 +569,9 @@ export default function HomeView({
             <div className="space-y-4" id="circle_list">
               <div className="flex items-center justify-between" id="circle_user_1">
                 <div className="flex items-center gap-3">
-                  <img
-                    alt="Sarah Chen avatar representation"
-                    className="w-10 h-10 border border-[#1A1A1A] object-cover grayscale"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGr_sRZvtTvDgWVLBG-0OLXmdj8mSEyTp344xKhwdvjWSw__8CVVPH-4mS2sostcNoj6m3qdc6iOg-B5PBtK-IVM4v2W7Nfdg6RBtU2APlOy2XRkTMtkVY8vS47KPEb9KXOF6TBY-dylpdYDcf3wLfMOXvBXp-9lA84mhY4du7zIsl6anERxm2habbhBWHlHf2M79AZpCLqU3F_1eOj9dlttNsx_G8ZFPt3wbNfNInv4BDMRMeJpPno7SXemX53UMaA2zUIcR31p8"
-                  />
+                  <div className="w-10 h-10 border border-[#1A1A1A] bg-neutral-100 flex items-center justify-center text-xs font-bold text-neutral-600">
+                    SC
+                  </div>
                   <div>
                     <p className="text-xs font-bold text-neutral-800">Sarah Chen</p>
                     <p className="text-[10px] text-neutral-400 font-medium">Active Now</p>
@@ -589,11 +587,9 @@ export default function HomeView({
 
               <div className="flex items-center justify-between" id="circle_user_2">
                 <div className="flex items-center gap-3">
-                  <img
-                    alt="Thomas Wright avatar representation"
-                    className="w-10 h-10 border border-neutral-300 object-cover grayscale"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBtQ8q80MTc3VKTnUQKavpvsEdtQ5qrGvipLaRNf8k-F9zQJSrlnrsOPKf9PE9R4s1-aH92ZX8G03x4v_UDfEQtBcFR_1l4wWbKuIWwBjZsozo1TGfHZEkZ0lu_AIkrmE8qLT3PJHSfDUi7lBRKqTBb8WKrMPQuWPwlFl0pLwo2Cqfzwg8sxTjQZjJQ8T3vOmMVnyla-q1trbIPxr8rQv3u00aHAm81Apcend86DYZccv32ubUPSmjxx2XYjoVabdARVUlyoIPRng"
-                  />
+                  <div className="w-10 h-10 border border-neutral-300 bg-neutral-100 flex items-center justify-center text-xs font-bold text-neutral-400">
+                    TW
+                  </div>
                   <div>
                     <p className="text-xs font-bold text-neutral-400">Thomas Wright</p>
                     <p className="text-[10px] text-neutral-400">Completed Study</p>
