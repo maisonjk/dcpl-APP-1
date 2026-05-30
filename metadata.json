@@ -1,0 +1,6 @@
+{
+  "name": "Disciple Daily Sanctuary",
+  "description": "An elegant, meditative Christian daily sanctuary app. Features daily scripture focus with interactive highlight tools, local word/prayer/obedience habit tracking, growth journey alignment, daily journal with answered history, and kingdom task missions—all processed and saved locally for absolute privacy and compliance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
