@@ -61,3 +61,20 @@ export interface PathStage {
     completed: boolean;
   }[];
 }
+
+export type SubscriptionTier = "free" | "disciple_plus" | "church_leader";
+
+export interface User {
+  id: number;
+  email: string;
+  username: string;
+  tier: SubscriptionTier;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+  isLoading: boolean;
+}
