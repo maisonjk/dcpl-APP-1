@@ -37,6 +37,30 @@ export default function App() {
   const [planProgress, setPlanProgress] = useState<Record<string, number>>(() => {
     try { return JSON.parse(localStorage.getItem("dcpl_plan_progress") || "{}"); } catch { return {}; }
   });
+  const [activePlanId, setActivePlanId] = useState<string | null>(() => {
+    return localStorage.getItem("dcpl_active_plan_id") || null;
+  });
+
+  const setActivePlan = (planId: string) => {
+    setActivePlanId(planId);
+    localStorage.setItem("dcpl_active_plan_id", planId);
+  };
+
+  const switchPlan = (newPlanId: string, newPlanTitle: string) => {
+    const currentTitle = activePlanId
+      ? ([...READING_PLANS, { id: "curriculum", title: "Growing in Christ" }].find(p => p.id === activePlanId)?.title ?? activePlanId)
+      : "";
+    const confirmed = window.confirm(
+      `Switch to "${newPlanTitle}"? Your progress on "${currentTitle}" will be reset to Day 1.`
+    );
+    if (!confirmed) return;
+    if (activePlanId && activePlanId !== "curriculum") {
+      const updated = { ...planProgress, [activePlanId]: 1 };
+      setPlanProgress(updated);
+      localStorage.setItem("dcpl_plan_progress", JSON.stringify(updated));
+    }
+    setActivePlan(newPlanId);
+  };
   const getActivePlanVerse = (planId: string): ScriptureVerse => {
     const day = planProgress[planId] ?? 1;
     return ALL_VERSES.find((v) => v.planId === planId && v.dayNumber === day) ?? ALL_VERSES.find((v) => v.planId === planId)!;
@@ -275,128 +299,169 @@ export default function App() {
               )}
 
               {activeTab === "bible" && (
-                <div className="space-y-10 text-left" id="bible_tab_container">
+                <div className="space-y-8 text-left" id="bible_tab_container">
                   <div className="border-l-4 border-[#1A1A1A] pl-5 space-y-1.5">
                     <span className="font-sans text-[11px] text-[#1A1A1A] uppercase tracking-[0.2em] font-bold block">Reading Plans</span>
                     <h2 className="font-serif text-3xl font-bold text-[#1A1A1A]">Word Study</h2>
-                    <p className="text-sm text-neutral-500 max-w-lg font-sans leading-relaxed">
-                      Choose a plan and study one passage per day. Each session includes context, application, and reflection.
+                    <p className="text-sm text-neutral-500 font-sans leading-relaxed">
+                      {activePlanId ? "Your active plan is shown below." : "Choose a plan to begin your daily Word study."}
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 gap-6">
-                    {READING_PLANS.map((plan) => {
-                      const currentDay = planProgress[plan.id] ?? 1;
-                      const verse = getActivePlanVerse(plan.id);
-                      const isActive = activeVerse.planId === plan.id;
-                      const progressPct = Math.round(((currentDay - 1) / plan.totalDays) * 100);
-                      return (
-                        <div
+
+                  {/* No plan chosen yet — show all as selection cards */}
+                  {!activePlanId && (
+                    <div className="grid grid-cols-1 gap-4">
+                      {READING_PLANS.map((plan) => (
+                        <button
                           key={plan.id}
-                          className={`p-8 border bg-white rounded-none transition flex flex-col text-left ${
-                            isActive ? "border-2 border-[#1A1A1A]" : "border-neutral-200 hover:border-neutral-400"
-                          }`}
+                          onClick={() => setActivePlan(plan.id)}
+                          className="p-6 border border-neutral-200 hover:border-[#1A1A1A] bg-white text-left transition group"
                         >
-                          <div className="flex justify-between items-start mb-5">
-                            <div>
-                              <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">{plan.theme}</span>
-                              <h3 className="font-serif text-2xl font-bold text-[#1A1A1A]">{plan.title}</h3>
-                              <p className="text-xs text-neutral-500 font-sans mt-1">{plan.description}</p>
-                            </div>
-                            {isActive && (
-                              <span className="text-[9px] bg-[#1A1A1A] text-white px-2 py-0.5 font-bold uppercase tracking-wider font-sans whitespace-nowrap ml-4">Active</span>
-                            )}
-                          </div>
+                          <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">{plan.theme}</span>
+                          <h3 className="font-serif text-xl font-bold text-[#1A1A1A] mb-1">{plan.title}</h3>
+                          <p className="text-xs text-neutral-500 font-sans mb-3">{plan.description}</p>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">{plan.totalDays} days →</span>
+                        </button>
+                      ))}
 
-                          {/* Progress bar */}
-                          <div className="mb-5">
-                            <div className="flex justify-between text-[10px] font-sans font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
-                              <span>Day {currentDay} of {plan.totalDays}</span>
-                              <span>{progressPct}% complete</span>
-                            </div>
-                            <div className="h-1 bg-neutral-100 w-full">
-                              <div className="h-1 bg-[#1A1A1A] transition-all" style={{ width: `${progressPct}%` }} />
-                            </div>
-                          </div>
+                      {/* Curriculum selection card */}
+                      <button
+                        onClick={() => setActivePlan("curriculum")}
+                        className="p-6 border border-neutral-200 hover:border-[#1A1A1A] bg-white text-left transition group"
+                      >
+                        <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">Discipleship Curriculum</span>
+                        <h3 className="font-serif text-xl font-bold text-[#1A1A1A] mb-1">Growing in Christ</h3>
+                        <p className="text-xs text-neutral-500 font-sans mb-3">4 modules · 11 topics · 33 lessons on discipleship, theology, and spiritual formation.</p>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">33 lessons →</span>
+                      </button>
+                    </div>
+                  )}
 
-                          {/* Today's verse preview */}
-                          <div className="bg-neutral-50 p-4 mb-5">
-                            <span className="text-[9px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-1">Today — {verse.reference}</span>
-                            <p className="text-xs text-neutral-600 italic font-serif line-clamp-2 leading-relaxed">{verse.verseLines[0]}</p>
+                  {/* Active plan — reading plan */}
+                  {activePlanId && activePlanId !== "curriculum" && (() => {
+                    const plan = READING_PLANS.find(p => p.id === activePlanId);
+                    if (!plan) return null;
+                    const currentDay = planProgress[plan.id] ?? 1;
+                    const verse = getActivePlanVerse(plan.id);
+                    const progressPct = Math.round(((currentDay - 1) / plan.totalDays) * 100);
+                    return (
+                      <div className="p-8 border-2 border-[#1A1A1A] bg-white flex flex-col text-left">
+                        <div className="flex justify-between items-start mb-5">
+                          <div>
+                            <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">{plan.theme}</span>
+                            <h3 className="font-serif text-2xl font-bold text-[#1A1A1A]">{plan.title}</h3>
+                            <p className="text-xs text-neutral-500 font-sans mt-1">{plan.description}</p>
                           </div>
-
-                          <div className="flex gap-2 pt-4 border-t border-gray-100">
-                            <button
-                              onClick={() => { setActiveVerse(verse); setIsStudyMode(true); }}
-                              className="bg-[#1A1A1A] text-white hover:bg-neutral-800 text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none text-center transition flex-1 flex items-center justify-center gap-1.5"
-                            >
-                              <BookOpen className="w-3.5 h-3.5" />
-                              <span>Study Day {currentDay}</span>
-                            </button>
-                            {currentDay < plan.totalDays && (
-                              <button
-                                onClick={() => {
-                                  const next = currentDay + 1;
-                                  const updated = { ...planProgress, [plan.id]: next };
-                                  setPlanProgress(updated);
-                                  localStorage.setItem("dcpl_plan_progress", JSON.stringify(updated));
-                                  setBibleToast(`Day ${currentDay} complete — Day ${next} unlocked`);
-                                  setTimeout(() => setBibleToast(null), 3000);
-                                }}
-                                className="border border-[#1A1A1A] hover:bg-neutral-50 text-[#1A1A1A] text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none transition"
-                              >
-                                Mark Done
-                              </button>
-                            )}
-                            {currentDay === plan.totalDays && progressPct === 100 && (
-                              <span className="border border-neutral-200 text-neutral-400 text-[10px] uppercase font-bold tracking-widest px-4 py-3">
-                                Completed
-                              </span>
-                            )}
+                          <span className="text-[9px] bg-[#1A1A1A] text-white px-2 py-0.5 font-bold uppercase tracking-wider font-sans whitespace-nowrap ml-4">Active</span>
+                        </div>
+                        <div className="mb-5">
+                          <div className="flex justify-between text-[10px] font-sans font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                            <span>Day {currentDay} of {plan.totalDays}</span>
+                            <span>{progressPct}% complete</span>
+                          </div>
+                          <div className="h-1 bg-neutral-100 w-full">
+                            <div className="h-1 bg-[#1A1A1A] transition-all" style={{ width: `${progressPct}%` }} />
                           </div>
                         </div>
-                      );
-                    })}
-
-                    {/* Curriculum card */}
-                    {(() => {
-                      const totalLessons = CURRICULUM_PLANS.reduce((s, p) => s + p.topics.reduce((ts, t) => ts + t.lessons.length, 0), 0);
-                      const completedLessons = (() => { try { return (JSON.parse(localStorage.getItem("dcpl_curriculum_completed") || "[]") as string[]).length; } catch { return 0; } })();
-                      const pct = Math.round((completedLessons / totalLessons) * 100);
-                      return (
-                        <div className="p-8 border border-neutral-200 hover:border-neutral-400 bg-white rounded-none transition flex flex-col text-left">
-                          <div className="flex justify-between items-start mb-5">
-                            <div>
-                              <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">Discipleship Curriculum</span>
-                              <h3 className="font-serif text-2xl font-bold text-[#1A1A1A]">Growing in Christ</h3>
-                              <p className="text-xs text-neutral-500 font-sans mt-1">4 modules · 11 topics · 33 lessons on discipleship, theology, and spiritual formation.</p>
-                            </div>
-                          </div>
-                          <div className="mb-5">
-                            <div className="flex justify-between text-[10px] font-sans font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
-                              <span>{completedLessons} of {totalLessons} lessons</span>
-                              <span>{pct}% complete</span>
-                            </div>
-                            <div className="h-1 bg-neutral-100 w-full">
-                              <div className="h-1 bg-[#1A1A1A] transition-all" style={{ width: `${pct}%` }} />
-                            </div>
-                          </div>
-                          <div className="bg-neutral-50 p-4 mb-5">
-                            <span className="text-[9px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-1">Includes</span>
-                            <p className="text-xs text-neutral-600 font-sans leading-relaxed">Growing in Christ · Message of Christ · Becoming Like Christ · Serving Christ</p>
-                          </div>
-                          <div className="pt-4 border-t border-gray-100">
+                        <div className="bg-neutral-50 p-4 mb-5">
+                          <span className="text-[9px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-1">Today — {verse.reference}</span>
+                          <p className="text-xs text-neutral-600 italic font-serif line-clamp-2 leading-relaxed">{verse.verseLines[0]}</p>
+                        </div>
+                        <div className="flex gap-2 pt-4 border-t border-gray-100">
+                          <button
+                            onClick={() => { setActiveVerse(verse); setIsStudyMode(true); }}
+                            className="bg-[#1A1A1A] text-white hover:bg-neutral-800 text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none text-center transition flex-1 flex items-center justify-center gap-1.5"
+                          >
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Study Day {currentDay}</span>
+                          </button>
+                          {currentDay < plan.totalDays && (
                             <button
-                              onClick={() => setIsCurriculumMode(true)}
-                              className="bg-[#1A1A1A] text-white hover:bg-neutral-800 text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none text-center transition w-full flex items-center justify-center gap-1.5"
+                              onClick={() => {
+                                const next = currentDay + 1;
+                                const updated = { ...planProgress, [plan.id]: next };
+                                setPlanProgress(updated);
+                                localStorage.setItem("dcpl_plan_progress", JSON.stringify(updated));
+                                setBibleToast(`Day ${currentDay} complete — Day ${next} unlocked`);
+                                setTimeout(() => setBibleToast(null), 3000);
+                              }}
+                              className="border border-[#1A1A1A] hover:bg-neutral-50 text-[#1A1A1A] text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none transition"
                             >
-                              <BookOpen className="w-3.5 h-3.5" />
-                              <span>Open Curriculum</span>
+                              ✓ Done for Today
                             </button>
+                          )}
+                          {currentDay >= plan.totalDays && (
+                            <span className="border border-neutral-200 text-neutral-400 text-[10px] uppercase font-bold tracking-widest px-4 py-3">
+                              Completed ✓
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Active plan — curriculum */}
+                  {activePlanId === "curriculum" && (() => {
+                    const totalLessons = CURRICULUM_PLANS.reduce((s, p) => s + p.topics.reduce((ts, t) => ts + t.lessons.length, 0), 0);
+                    const completedLessons = (() => { try { return (JSON.parse(localStorage.getItem("dcpl_curriculum_completed") || "[]") as string[]).length; } catch { return 0; } })();
+                    const pct = Math.round((completedLessons / totalLessons) * 100);
+                    return (
+                      <div className="p-8 border-2 border-[#1A1A1A] bg-white flex flex-col text-left">
+                        <div className="flex justify-between items-start mb-5">
+                          <div>
+                            <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">Discipleship Curriculum</span>
+                            <h3 className="font-serif text-2xl font-bold text-[#1A1A1A]">Growing in Christ</h3>
+                            <p className="text-xs text-neutral-500 font-sans mt-1">4 modules · 11 topics · 33 lessons.</p>
+                          </div>
+                          <span className="text-[9px] bg-[#1A1A1A] text-white px-2 py-0.5 font-bold uppercase tracking-wider font-sans whitespace-nowrap ml-4">Active</span>
+                        </div>
+                        <div className="mb-5">
+                          <div className="flex justify-between text-[10px] font-sans font-bold uppercase tracking-widest text-neutral-400 mb-1.5">
+                            <span>{completedLessons} of {totalLessons} lessons</span>
+                            <span>{pct}% complete</span>
+                          </div>
+                          <div className="h-1 bg-neutral-100 w-full">
+                            <div className="h-1 bg-[#1A1A1A] transition-all" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
-                      );
-                    })()}
-                  </div>
+                        <div className="pt-4 border-t border-gray-100">
+                          <button
+                            onClick={() => setIsCurriculumMode(true)}
+                            className="bg-[#1A1A1A] text-white hover:bg-neutral-800 text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none text-center transition w-full flex items-center justify-center gap-1.5"
+                          >
+                            <BookOpen className="w-3.5 h-3.5" />
+                            <span>Open Curriculum</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Other Plans — compact list shown when a plan is active */}
+                  {activePlanId && (
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-sans">Other Plans</p>
+                      {[
+                        ...READING_PLANS.filter(p => p.id !== activePlanId).map(p => ({
+                          id: p.id, title: p.title, subtitle: `${p.totalDays} days · ${p.theme}`
+                        })),
+                        ...(activePlanId !== "curriculum" ? [{ id: "curriculum", title: "Growing in Christ", subtitle: "33 lessons · Discipleship Curriculum" }] : []),
+                      ].map(p => (
+                        <div key={p.id} className="flex items-center justify-between p-4 border border-neutral-200 bg-white">
+                          <div>
+                            <p className="text-xs font-bold text-neutral-700">{p.title}</p>
+                            <p className="text-[10px] text-neutral-400">{p.subtitle}</p>
+                          </div>
+                          <button
+                            onClick={() => switchPlan(p.id, p.title)}
+                            className="text-[9px] font-bold uppercase tracking-widest border border-neutral-300 px-3 py-1.5 hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition text-neutral-500"
+                          >
+                            Switch
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -619,6 +684,6 @@ export default function App() {
         )}
       </AnimatePresence>
     </div>
-    </div> {/* app_frame_outer */}
+    </div>
   );
 }
