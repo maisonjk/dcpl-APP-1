@@ -13,6 +13,7 @@ import {
   Bell,
   Zap,
   LogOut,
+  ChevronLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -34,6 +35,7 @@ import CurriculumView from "./components/CurriculumView";
 export default function App() {
   const { user, logout, isLoading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("home");
+  const [tabHistory, setTabHistory] = useState<string[]>([]);
   const [planProgress, setPlanProgress] = useState<Record<string, number>>(() => {
     try { return JSON.parse(localStorage.getItem("dcpl_plan_progress") || "{}"); } catch { return {}; }
   });
@@ -80,6 +82,22 @@ export default function App() {
   const [settingsStatusMessage, setSettingsStatusMessage] = useState<string | null>(null);
   const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
   const [permissionStatus, setPermissionStatus] = useState<string>("default");
+
+  // Tab history for back navigation
+  const navigateTo = (tab: string) => {
+    setTabHistory(prev => [...prev, activeTab]);
+    setActiveTab(tab);
+    setIsStudyMode(false);
+    setIsCurriculumMode(false);
+  };
+  const goBack = () => {
+    if (tabHistory.length === 0) return;
+    const prev = tabHistory[tabHistory.length - 1];
+    setTabHistory(h => h.slice(0, -1));
+    setActiveTab(prev);
+    setIsStudyMode(false);
+    setIsCurriculumMode(false);
+  };
 
   // Load local stats on mount
   useEffect(() => {
@@ -197,12 +215,23 @@ export default function App() {
       <header className="sticky top-0 z-30 bg-[#F9F8F6]/90 backdrop-blur-md border-b-2 border-[#1A1A1A]" id="navigation_main_header">
         <div className="flex justify-between items-baseline w-full px-5 py-5">
           <div className="flex items-baseline gap-6">
-            <button
-              onClick={() => { setActiveTab("home"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-              className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A] hover:opacity-85 transition-opacity uppercase"
-            >
-              DCPL
-            </button>
+            {tabHistory.length > 0 && !isStudyMode && !isCurriculumMode ? (
+              <button
+                onClick={goBack}
+                className="flex items-center gap-1 text-[#1A1A1A] hover:opacity-70 transition-opacity"
+                title="Go back"
+              >
+                <ChevronLeft className="w-5 h-5" />
+                <span className="font-serif text-3xl font-bold tracking-tight uppercase">DCPL</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => { setActiveTab("home"); setIsStudyMode(false); setIsCurriculumMode(false); }}
+                className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A] hover:opacity-85 transition-opacity uppercase"
+              >
+                DCPL
+              </button>
+            )}
             <span className="hidden md:inline text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-400">Spiritual Ledger</span>
           </div>
 
@@ -294,7 +323,7 @@ export default function App() {
                   verse={activeVerse}
                   onUpdateStats={handleUpdateStats}
                   onLaunchStudy={() => setIsStudyMode(true)}
-                  onNavigateTab={(tab) => setActiveTab(tab)}
+                  onNavigateTab={navigateTo}
                 />
               )}
 
