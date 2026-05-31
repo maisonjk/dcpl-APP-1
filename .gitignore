@@ -7,3 +7,9 @@ coverage/
 .env*
 !.env.example
 .gstack/
+
+# SQLite database — never commit real user data
+data.db
+data.db-shm
+data.db-wal
+backups/

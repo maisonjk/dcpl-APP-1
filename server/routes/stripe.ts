@@ -80,7 +80,12 @@ router.post("/portal", requireAuth as any, async (req: AuthRequest, res) => {
 
 router.post("/webhook", async (req, res) => {
   const sig = req.headers["stripe-signature"] as string;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    console.error("STRIPE_WEBHOOK_SECRET is not set — webhook ignored");
+    return res.status(500).json({ error: "Webhook secret not configured" });
+  }
 
   let event: Stripe.Event;
   try {

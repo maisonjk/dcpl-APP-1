@@ -10,6 +10,18 @@ db.pragma("foreign_keys = ON");
 
 // migrations
 try { db.exec("ALTER TABLE prayers ADD COLUMN shared INTEGER NOT NULL DEFAULT 0"); } catch {}
+
+// Password reset tokens table
+try {
+  db.exec(`CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token TEXT NOT NULL UNIQUE,
+    expires_at INTEGER NOT NULL,
+    used INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+  )`);
+} catch {}
 try {
   db.exec(`CREATE TABLE IF NOT EXISTS prayer_shares (
     prayer_id INTEGER NOT NULL REFERENCES prayers(id) ON DELETE CASCADE,

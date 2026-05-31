@@ -30,31 +30,31 @@ function LessonCard({ lesson, completed, onToggle, onStudyVerse }: LessonCardPro
           {completed && <span className="text-white text-[10px] font-bold">✓</span>}
         </button>
         <div className="flex-1 min-w-0">
-          <p className={`text-sm font-bold font-sans ${completed ? "text-neutral-400 line-through" : "text-[#1A1A1A]"}`}>{lesson.title}</p>
-          <p className="text-[10px] font-sans text-neutral-400 uppercase tracking-widest mt-0.5">{lesson.scripture}</p>
+          <p className={`text-[15px] font-bold font-sans leading-snug ${completed ? "text-neutral-400 line-through" : "text-[#1A1A1A]"}`}>{lesson.title}</p>
+          <p className="text-xs font-sans text-neutral-400 uppercase tracking-widest mt-0.5">{lesson.scripture}</p>
         </div>
         {expanded ? <ChevronDown className="w-4 h-4 text-neutral-400 flex-shrink-0" /> : <ChevronRight className="w-4 h-4 text-neutral-400 flex-shrink-0" />}
       </button>
       {expanded && (
         <div className="px-4 pb-4 pt-0 border-t border-neutral-100 space-y-3">
           {verse && (
-            <div className="bg-neutral-50 p-3 mt-3">
-              <span className="text-[9px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-1">{verse.reference}</span>
-              <p className="text-xs text-neutral-600 italic font-serif line-clamp-2 leading-relaxed">{verse.verseLines[0]}</p>
+            <div className="bg-neutral-50 p-4 mt-3">
+              <span className="text-[10px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-2">{verse.reference}</span>
+              <p className="text-sm text-neutral-700 italic font-serif leading-relaxed">{verse.verseLines[0]}</p>
             </div>
           )}
           <div className="flex items-start gap-2">
             <Target className="w-3.5 h-3.5 text-neutral-400 mt-0.5 flex-shrink-0" />
             <div>
-              <span className="text-[9px] font-bold font-sans uppercase tracking-widest text-neutral-400 block">Goal</span>
-              <p className="text-xs font-sans text-[#1A1A1A]">{lesson.goal}</p>
+              <span className="text-[10px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-0.5">Goal</span>
+              <p className="text-sm font-sans text-[#1A1A1A] leading-relaxed">{lesson.goal}</p>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Zap className="w-3.5 h-3.5 text-neutral-400 mt-0.5 flex-shrink-0" />
             <div>
-              <span className="text-[9px] font-bold font-sans uppercase tracking-widest text-neutral-400 block">Today's Practice</span>
-              <p className="text-xs font-sans text-[#1A1A1A]">{lesson.practice}</p>
+              <span className="text-[10px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-0.5">Today's Practice</span>
+              <p className="text-sm font-sans text-[#1A1A1A] leading-relaxed">{lesson.practice}</p>
             </div>
           </div>
           <div className="flex gap-2 pt-1">
@@ -105,7 +105,7 @@ function TopicSection({ plan, topicId, completed, onToggle, onStudyVerse }: Topi
         onClick={() => setOpen((o) => !o)}
       >
         <div className="flex-1">
-          <p className="text-sm font-bold font-sans text-[#1A1A1A]">{topic.title}</p>
+          <p className="text-base font-bold font-sans text-[#1A1A1A]">{topic.title}</p>
           <p className="text-[10px] font-sans text-neutral-400 uppercase tracking-widest mt-0.5">
             {doneCount} of {topic.lessons.length} lessons complete
           </p>

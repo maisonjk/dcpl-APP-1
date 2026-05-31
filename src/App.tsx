@@ -23,15 +23,23 @@ import { api } from "./api";
 import { useAuth } from "./auth/AuthContext";
 import LoginModal from "./auth/LoginModal";
 
-// Sub-components
+// Sub-components — heavy views are lazy-loaded to keep initial bundle small
 import HomeView from "./components/HomeView";
 import FocusView from "./components/FocusView";
-import PathView from "./components/PathView";
-import PrayerView from "./components/PrayerView";
-import MissionView from "./components/MissionView";
-import PricingView from "./components/PricingView";
-import CurriculumView from "./components/CurriculumView";
-import OnboardingFlow from "./components/OnboardingFlow";
+const PathView = React.lazy(() => import("./components/PathView"));
+const PrayerView = React.lazy(() => import("./components/PrayerView"));
+const MissionView = React.lazy(() => import("./components/MissionView"));
+const PricingView = React.lazy(() => import("./components/PricingView"));
+const CurriculumView = React.lazy(() => import("./components/CurriculumView"));
+const OnboardingFlow = React.lazy(() => import("./components/OnboardingFlow"));
+
+function ViewLoader() {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <div className="w-5 h-5 border-2 border-[#1A1A1A] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 export default function App() {
   const { user, logout, isLoading: authLoading } = useAuth();
@@ -213,18 +221,20 @@ export default function App() {
 
   if (!hasOnboarded) {
     return (
-      <OnboardingFlow
-        onComplete={(name, planId) => {
-          const updated = { ...stats, username: name };
-          handleUpdateStats(updated);
-          if (planId && planId !== "none") {
-            setActivePlanId(planId);
-            localStorage.setItem("dcpl_active_plan_id", planId);
-          }
-          localStorage.setItem("dcpl_onboarded", "true");
-          setHasOnboarded(true);
-        }}
-      />
+      <React.Suspense fallback={<div className="bg-[#1A1A1A] min-h-screen" />}>
+        <OnboardingFlow
+          onComplete={(name, planId) => {
+            const updated = { ...stats, username: name };
+            handleUpdateStats(updated);
+            if (planId && planId !== "none") {
+              setActivePlanId(planId);
+              localStorage.setItem("dcpl_active_plan_id", planId);
+            }
+            localStorage.setItem("dcpl_onboarded", "true");
+            setHasOnboarded(true);
+          }}
+        />
+      </React.Suspense>
     );
   }
 
@@ -236,23 +246,12 @@ export default function App() {
       <header className="sticky top-0 z-30 bg-[#F9F8F6]/90 backdrop-blur-md border-b-2 border-[#1A1A1A]" id="navigation_main_header">
         <div className="flex justify-between items-center w-full px-5 py-4">
           <div className="flex items-center gap-3">
-            {tabHistory.length > 0 && !isStudyMode && !isCurriculumMode ? (
-              <button
-                onClick={goBack}
-                className="flex items-center gap-1.5 text-[#1A1A1A] hover:opacity-70 transition-opacity"
-                title="Go back"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                <span className="font-serif text-2xl font-bold tracking-tight uppercase">DCPL</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => { setActiveTab("home"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-                className="font-serif text-2xl font-bold tracking-tight text-[#1A1A1A] hover:opacity-80 transition-opacity uppercase"
-              >
-                DCPL
-              </button>
-            )}
+            <button
+              onClick={() => { setActiveTab("home"); setIsStudyMode(false); setIsCurriculumMode(false); }}
+              className="font-serif text-2xl font-bold tracking-tight text-[#1A1A1A] hover:opacity-80 transition-opacity uppercase"
+            >
+              DCPL
+            </button>
             <span className="hidden sm:inline text-[10px] font-sans font-semibold uppercase tracking-[0.12em] text-neutral-300">Daily Devotion</span>
           </div>
 
@@ -297,6 +296,28 @@ export default function App() {
         </div>
       </header>
 
+      {/* Floating Back Button */}
+      <AnimatePresence>
+        {tabHistory.length > 0 && !isStudyMode && !isCurriculumMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="px-5 pt-4"
+          >
+            <button
+              onClick={goBack}
+              className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest transition-colors shadow-md"
+              style={{ borderRadius: 0 }}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Main Content */}
       <main className="flex-grow w-full px-5 py-8" id="viewport_main_content">
         <AnimatePresence mode="wait">
@@ -329,7 +350,9 @@ export default function App() {
                   ← Back to Plans
                 </button>
               </div>
-              <CurriculumView onStudyVerse={(verse) => { setActiveVerse(verse); setIsCurriculumMode(false); setStudyReturnToCurriculum(true); setIsStudyMode(true); }} />
+              <React.Suspense fallback={<ViewLoader />}>
+                <CurriculumView onStudyVerse={(verse) => { setActiveVerse(verse); setIsCurriculumMode(false); setStudyReturnToCurriculum(true); setIsStudyMode(true); }} />
+              </React.Suspense>
             </motion.div>
           ) : (
             <motion.div
@@ -517,18 +540,28 @@ export default function App() {
                 </div>
               )}
 
-              {activeTab === "path" && <PathView />}
+              {activeTab === "path" && (
+                <React.Suspense fallback={<ViewLoader />}>
+                  <PathView />
+                </React.Suspense>
+              )}
 
               {activeTab === "prayer" && (
-                <PrayerView onUpgrade={() => { setLoginMode("register"); setActiveTab("pricing"); }} />
+                <React.Suspense fallback={<ViewLoader />}>
+                  <PrayerView onUpgrade={() => { setLoginMode("register"); setActiveTab("pricing"); }} />
+                </React.Suspense>
               )}
 
               {activeTab === "mission" && (
-                <MissionView stats={stats} onUpdateStats={handleUpdateStats} />
+                <React.Suspense fallback={<ViewLoader />}>
+                  <MissionView stats={stats} onUpdateStats={handleUpdateStats} />
+                </React.Suspense>
               )}
 
               {activeTab === "pricing" && (
-                <PricingView onSignUpRequired={() => { setLoginMode("register"); setShowLogin(true); }} />
+                <React.Suspense fallback={<ViewLoader />}>
+                  <PricingView onSignUpRequired={() => { setLoginMode("register"); setShowLogin(true); }} />
+                </React.Suspense>
               )}
             </motion.div>
           )}

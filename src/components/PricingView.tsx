@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { Check, Zap, Church, HandHeart, Loader2 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
 import { api } from "../api";
+import LegalModal from "./LegalModal";
 
 const PRICE_IDS = {
   disciple_monthly: import.meta.env.VITE_STRIPE_PRICE_DISCIPLE_MONTHLY || "",
@@ -19,6 +20,7 @@ export default function PricingView({ onSignUpRequired }: PricingViewProps) {
   const { user, tier, isAtLeast } = useAuth();
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [loading, setLoading] = useState<string | null>(null);
+  const [legalDoc, setLegalDoc] = useState<"terms" | "privacy" | null>(null);
 
   const handleSubscribe = async (planKey: "disciple" | "church") => {
     if (!user) { onSignUpRequired(); return; }
@@ -238,6 +240,16 @@ export default function PricingView({ onSignUpRequired }: PricingViewProps) {
       <p className="text-center text-[11px] text-neutral-400 font-sans">
         Secure payments via Stripe · Cancel anytime · No hidden fees
       </p>
+
+      <p className="text-center text-[10px] text-neutral-300 font-sans">
+        <button onClick={() => setLegalDoc("terms")} className="underline hover:text-neutral-500 transition">Terms of Service</button>
+        {" · "}
+        <button onClick={() => setLegalDoc("privacy")} className="underline hover:text-neutral-500 transition">Privacy Policy</button>
+      </p>
+
+      <AnimatePresence>
+        {legalDoc && <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />}
+      </AnimatePresence>
     </motion.div>
   );
 }
