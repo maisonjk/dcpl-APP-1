@@ -15,6 +15,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
   const { user } = useAuth();
   const [missions, setMissions] = useState<Mission[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [completedMissionTitle, setCompletedMissionTitle] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -48,6 +49,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
   };
 
   const handleCompleteMission = (missionId: string) => {
+    const mission = missions.find(m => m.id === missionId);
     const updated = missions.map((m) =>
       m.id === missionId ? { ...m, status: "completed" as const } : m
     );
@@ -65,18 +67,10 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
       level: newLevel
     });
 
-    setToastMessage("Praise God! You completed a daily kingdom mission challenge!");
-    setTimeout(() => setToastMessage(null), 3500);
-  };
-
-  const handleResetMissions = () => {
-    const reset = missions.map((m) => ({ ...m, status: "idle" as const }));
-    setMissions(reset);
-    if (user) {
-      reset.forEach((m) => api.missions.update(m.id, "idle").catch(console.error));
+    if (mission) {
+      setCompletedMissionTitle(mission.title);
+      setTimeout(() => setCompletedMissionTitle(null), 3500);
     }
-    setToastMessage("Missions reset. Ready to serve again!");
-    setTimeout(() => setToastMessage(null), 2500);
   };
 
   // Convert icon name strings to actual Lucide component wrappers with Stark Styling
@@ -173,15 +167,22 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
         ))}
       </div>
 
-      {/* Reset Missions tool button action list */}
-      <div className="flex justify-end pt-2" id="mission_reset_tools">
-        <button
-          onClick={handleResetMissions}
-          className="text-[9px] font-mono uppercase tracking-widest text-neutral-450 hover:text-neutral-700 border-b border-dashed border-[#1A1A1A] cursor-pointer"
-        >
-          Reset mission states
-        </button>
-      </div>
+      {/* Mission completion banner */}
+      <AnimatePresence>
+        {completedMissionTitle && (
+          <motion.div
+            key="mission-complete"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="border-2 border-[#1A1A1A] bg-[#1A1A1A] text-white p-6 text-center space-y-1"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Mission Complete</p>
+            <p className="font-serif text-lg font-bold">{completedMissionTitle}</p>
+            <p className="text-[10px] text-neutral-400 italic">"Well done, good and faithful servant." — Matthew 25:23</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Impact Journey Status Panel */}
       <section className="border-t border-[#1A1A1A] pt-10 text-left space-y-6" id="mission_progression_panel">
