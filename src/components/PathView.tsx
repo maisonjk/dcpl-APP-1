@@ -2,43 +2,43 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Check, Lock, BookOpen, Users, Compass, ShieldAlert, Award } from "lucide-react";
 import { PathStage } from "../types";
+import { api } from "../api";
+import { useAuth } from "../auth/AuthContext";
 
 export default function PathView() {
+  const { user } = useAuth();
   const [discipleProgress, setDiscipleProgress] = useState<number>(64);
   const [requirements, setRequirements] = useState([
-    { id: "r1", text: "Complete 'The Great Commission' module", completed: true },
-    { id: "r2", text: "Guide 2 individuals through Seeker path", completed: false },
-    { id: "r3", text: "Attend Leadership Workshop", completed: false }
+    { id: "r1", text: "Read through the Gospel of John in full", completed: false },
+    { id: "r2", text: "Memorize 5 key scripture passages", completed: false },
+    { id: "r3", text: "Share your faith story with someone new", completed: false },
+    { id: "r4", text: "Complete 30 consecutive days of prayer journaling", completed: false },
+    { id: "r5", text: "Mentor or disciple one other believer", completed: false },
   ]);
 
   useEffect(() => {
-    const savedReqs = localStorage.getItem("path_requirements");
-    if (savedReqs) {
-      try {
-        setRequirements(JSON.parse(savedReqs));
-      } catch (e) {
-        // ignore
+    if (!user) return;
+    api.progress.get().then((data) => {
+      if (data.pathRequirements && Array.isArray(data.pathRequirements) && data.pathRequirements.length > 0) {
+        setRequirements(data.pathRequirements as typeof requirements);
       }
-    }
-  }, []);
+    }).catch(console.error);
+  }, [user]);
 
-  // Recalculate progress when requirements change
   useEffect(() => {
-    // Stage 3 base starts at 33% and increments up to 100% based on subtasks
     const completedCount = requirements.filter((r) => r.completed).length;
     const calculatedPercentage = Math.round(40 + (completedCount / requirements.length) * 60);
     setDiscipleProgress(calculatedPercentage);
   }, [requirements]);
 
   const toggleRequirement = (id: string) => {
-    const updated = requirements.map((r) => {
-      if (r.id === id) {
-        return { ...r, completed: !r.completed };
-      }
-      return r;
-    });
+    const updated = requirements.map((r) =>
+      r.id === id ? { ...r, completed: !r.completed } : r
+    );
     setRequirements(updated);
-    localStorage.setItem("path_requirements", JSON.stringify(updated));
+    if (user) {
+      api.progress.update({ pathRequirements: updated }).catch(console.error);
+    }
   };
 
   return (
@@ -72,7 +72,8 @@ export default function PathView() {
           </div>
           <div className="pt-0.5 text-left">
             <h3 className="font-serif text-lg font-bold text-neutral-400">Seeker</h3>
-            <p className="text-xs text-neutral-400 font-mono uppercase tracking-wider">Completed • Jan 2026</p>
+            <p className="text-xs text-neutral-400 font-mono uppercase tracking-wider">Completed</p>
+            <p className="text-xs text-neutral-400 font-sans mt-1 max-w-xs">Opened the Word, asked the hard questions, and began pursuing truth.</p>
           </div>
         </div>
 
@@ -83,7 +84,8 @@ export default function PathView() {
           </div>
           <div className="pt-0.5 text-left">
             <h3 className="font-serif text-lg font-bold text-neutral-400">Believer</h3>
-            <p className="text-xs text-neutral-400 font-mono uppercase tracking-wider">Completed • March 2026</p>
+            <p className="text-xs text-neutral-400 font-mono uppercase tracking-wider">Completed</p>
+            <p className="text-xs text-neutral-400 font-sans mt-1 max-w-xs">Committed to faith, built daily habits of prayer and scripture reading.</p>
           </div>
         </div>
 
@@ -108,21 +110,21 @@ export default function PathView() {
             </div>
 
             {/* Stage subtrack disciplines item boxes */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[#1A1A1A] border border-[#1A1A1A] mb-6">
+            <div className="grid grid-cols-1 gap-px bg-[#1A1A1A] border border-[#1A1A1A] mb-6">
               <div className="bg-white p-5 text-left rounded-none">
                 <BookOpen className="w-5 h-5 text-[#1A1A1A] mb-2.5" />
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-0.5 font-sans">Deep Study</h4>
-                <p className="text-[11px] text-neutral-500">4 of 7 completed</p>
+                <p className="text-[11px] text-neutral-500">{requirements.filter(r => r.completed).length} of {requirements.length} completed</p>
               </div>
               <div className="bg-white p-5 text-left rounded-none">
                 <Users className="w-5 h-5 text-[#1A1A1A] mb-2.5" />
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-0.5 font-sans">Fellowship</h4>
-                <p className="text-[11px] text-neutral-500">Weekly group circle</p>
+                <p className="text-[11px] text-neutral-500">Accountability circle</p>
               </div>
               <div className="bg-white p-5 text-left rounded-none">
                 <Compass className="w-5 h-5 text-[#1A1A1A] mb-2.5" />
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-0.5 font-sans">Journaling</h4>
-                <p className="text-[11px] text-neutral-500">Dual entry habits</p>
+                <p className="text-[11px] text-neutral-500">Prayer journal active</p>
               </div>
             </div>
 
