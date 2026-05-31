@@ -485,7 +485,7 @@ export default function App() {
                             onClick={() => switchPlan(p.id, p.title)}
                             className="text-[9px] font-bold uppercase tracking-widest border border-neutral-300 px-3 py-2 hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition text-neutral-500 w-full text-center"
                           >
-                            Switch to this plan
+                            Start this plan
                           </button>
                         </div>
                       ))}
