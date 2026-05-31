@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send, Check, Trash2, ChevronDown, ChevronUp, Loader2, Users } from "lucide-react";
-import { api, type Prayer } from "../api";
+import { Send, Check, Trash2, ChevronDown, ChevronUp, Loader2, Users, X } from "lucide-react";
+import { api, type Prayer, type AccountabilityPartner } from "../api";
 import { useAuth } from "../auth/AuthContext";
 import UpgradePrompt from "./UpgradePrompt";
 
@@ -23,6 +23,12 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [filterTag, setFilterTag] = useState<string>("ALL");
   const [shareToast, setShareToast] = useState<string | null>(null);
+
+  // Partner picker state
+  const [pickerPrayerId, setPickerPrayerId] = useState<number | null>(null);
+  const [partners, setPartners] = useState<AccountabilityPartner[]>([]);
+  const [pickerSelected, setPickerSelected] = useState<Set<number>>(new Set());
+  const [pickerLoading, setPickerLoading] = useState(false);
 
   useEffect(() => {
     if (!user) { setIsLoading(false); return; }
@@ -50,11 +56,40 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
     }
   };
 
-  const handleToggleShare = async (prayer: Prayer) => {
-    const updated = await api.prayers.share(prayer.id, !prayer.shared);
-    setPrayers((prev) => prev.map((p) => (p.id === prayer.id ? updated : p)));
-    if (updated.shared) {
-      setShareToast("Your circle can now see this prayer");
+  const openSharePicker = async (prayer: Prayer) => {
+    setPickerPrayerId(prayer.id);
+    setPickerLoading(true);
+    try {
+      const [allPartners, existing] = await Promise.all([
+        api.accountability.list(),
+        api.prayers.getShares(prayer.id),
+      ]);
+      setPartners(allPartners.filter(p => p.status === "accepted"));
+      setPickerSelected(new Set(existing.sharedWith));
+    } finally {
+      setPickerLoading(false);
+    }
+  };
+
+  const closeSharePicker = () => setPickerPrayerId(null);
+
+  const togglePickerPartner = (uid: number) => {
+    setPickerSelected(prev => {
+      const next = new Set(prev);
+      next.has(uid) ? next.delete(uid) : next.add(uid);
+      return next;
+    });
+  };
+
+  const saveShares = async () => {
+    if (pickerPrayerId === null) return;
+    const sharedWith = Array.from(pickerSelected) as number[];
+    const updated = await api.prayers.setShares(pickerPrayerId, sharedWith);
+    setPrayers(prev => prev.map(p => p.id === pickerPrayerId ? { ...p, shared: updated.shared } : p));
+    closeSharePicker();
+    if (sharedWith.length > 0) {
+      const names = partners.filter(p => pickerSelected.has(p.id)).map(p => p.username);
+      setShareToast(`Shared with ${names.join(", ")}`);
       setTimeout(() => setShareToast(null), 3000);
     }
   };
@@ -183,16 +218,16 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
                 <p className="text-sm font-sans text-neutral-800 leading-relaxed flex-1">{prayer.text}</p>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
-                    onClick={() => handleToggleShare(prayer)}
+                    onClick={() => openSharePicker(prayer)}
                     className={`flex items-center gap-1 border text-[9px] font-bold uppercase tracking-widest px-2 py-1 transition ${
                       prayer.shared
                         ? "bg-[#1A1A1A] text-white border-[#1A1A1A]"
                         : "border-neutral-300 text-neutral-400 hover:border-[#1A1A1A] hover:text-[#1A1A1A]"
                     }`}
-                    title={prayer.shared ? "Shared with circle" : "Share with circle"}
+                    title={prayer.shared ? "Manage circle sharing" : "Share with circle members"}
                   >
                     <Users className="w-3 h-3" />
-                    <span>{prayer.shared ? "Shared with Circle" : "Share with Circle"}</span>
+                    <span>{prayer.shared ? "Shared" : "Share"}</span>
                   </button>
                   <button
                     onClick={() => handleDelete(prayer.id)}
@@ -266,6 +301,88 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
           </p>
         )}
       </div>
+
+      {/* Partner picker modal */}
+      <AnimatePresence>
+        {pickerPrayerId !== null && (
+          <motion.div
+            key="share-picker-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center"
+            onClick={closeSharePicker}
+          >
+            <motion.div
+              key="share-picker-panel"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
+              className="bg-white w-full sm:max-w-[380px] border-2 border-[#1A1A1A] p-6 space-y-5"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-sans">Prayer Sharing</p>
+                  <h3 className="font-serif text-lg font-bold text-[#1A1A1A]">Share with who?</h3>
+                </div>
+                <button onClick={closeSharePicker} className="text-neutral-400 hover:text-[#1A1A1A] transition">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {pickerLoading ? (
+                <div className="flex justify-center py-6">
+                  <Loader2 className="w-5 h-5 animate-spin text-neutral-400" />
+                </div>
+              ) : partners.length === 0 ? (
+                <p className="text-sm text-neutral-400 font-sans italic text-center py-4">
+                  No accepted circle members yet. Add partners in the Circle tab.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {partners.map(partner => (
+                    <button
+                      key={partner.id}
+                      onClick={() => togglePickerPartner(partner.id)}
+                      className={`w-full flex items-center justify-between px-4 py-3 border text-left transition ${
+                        pickerSelected.has(partner.id)
+                          ? "bg-[#1A1A1A] text-white border-[#1A1A1A]"
+                          : "border-neutral-200 text-[#1A1A1A] hover:border-[#1A1A1A]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 border-2 flex items-center justify-center flex-shrink-0 ${
+                          pickerSelected.has(partner.id) ? "border-white bg-white" : "border-neutral-300"
+                        }`}>
+                          {pickerSelected.has(partner.id) && <Check className="w-3 h-3 text-[#1A1A1A]" />}
+                        </div>
+                        <span className="text-sm font-bold font-sans">{partner.username}</span>
+                      </div>
+                      <span className="text-[9px] uppercase tracking-widest opacity-50">Circle</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-2 pt-2 border-t border-neutral-100">
+                <button
+                  onClick={saveShares}
+                  className="w-full bg-[#1A1A1A] text-white py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-neutral-800 transition"
+                >
+                  {pickerSelected.size === 0 ? "Remove sharing" : `Share with ${pickerSelected.size} ${pickerSelected.size === 1 ? "person" : "people"}`}
+                </button>
+                <button
+                  onClick={closeSharePicker}
+                  className="w-full border border-neutral-200 py-3 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:border-[#1A1A1A] transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {shareToast && (
         <motion.div

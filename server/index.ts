@@ -9,6 +9,7 @@ import prayerRoutes from "./routes/prayers.js";
 import missionRoutes from "./routes/missions.js";
 import progressRoutes from "./routes/progress.js";
 import stripeRoutes from "./routes/stripe.js";
+import accountabilityRoutes from "./routes/accountability.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -24,6 +25,7 @@ app.use("/api/prayers", prayerRoutes);
 app.use("/api/missions", missionRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/stripe", stripeRoutes);
+app.use("/api/accountability", accountabilityRoutes);
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 

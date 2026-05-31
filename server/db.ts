@@ -8,6 +8,33 @@ export const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
+// migrations
+try { db.exec("ALTER TABLE prayers ADD COLUMN shared INTEGER NOT NULL DEFAULT 0"); } catch {}
+try {
+  db.exec(`CREATE TABLE IF NOT EXISTS prayer_shares (
+    prayer_id INTEGER NOT NULL REFERENCES prayers(id) ON DELETE CASCADE,
+    shared_with_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY (prayer_id, shared_with_user_id)
+  )`);
+} catch {}
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS prayer_reactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prayer_id INTEGER NOT NULL REFERENCES prayers(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    UNIQUE(prayer_id, user_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS encouragements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    receiver_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+  );
+`);
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +64,15 @@ db.exec(`
     status TEXT NOT NULL DEFAULT 'idle',
     updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
     PRIMARY KEY (id, user_id)
+  );
+
+  CREATE TABLE IF NOT EXISTS accountability_partners (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    requester_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    partner_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    UNIQUE(requester_id, partner_id)
   );
 
   CREATE TABLE IF NOT EXISTS progress (
@@ -86,6 +122,7 @@ export type DbPrayer = {
   category_tags: string;
   answered: number;
   answer_text: string | null;
+  shared: number;
   created_at: number;
   updated_at: number;
 };

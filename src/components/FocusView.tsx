@@ -51,9 +51,12 @@ export default function FocusView({ verse, onBack }: FocusViewProps) {
     setTimeout(() => setCopiedNotification(false), 2500);
   };
 
+  const [highlightHint, setHighlightHint] = useState(false);
+
   const handleSaveInsight = () => {
     if (highlightedParagraphs.length === 0) {
-      alert("Tap any of the verse paragraphs below first to select what you want to highlight!");
+      setHighlightHint(true);
+      setTimeout(() => setHighlightHint(false), 3000);
       return;
     }
     const insightMessage = `Saved highlight for ${verse.reference} on Day ${verse.dayNumber}: ${highlightedParagraphs.length} verse line(s)`;
@@ -152,7 +155,48 @@ export default function FocusView({ verse, onBack }: FocusViewProps) {
         </button>
       </div>
 
-      {/* Scripture Display Block with Playfair headings and Literata verses */}
+      {/* Contextual Meaning Card Block based on Active Tab */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.25 }}
+          className="bg-white border-2 border-[#1A1A1A] rounded-none p-6 shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] mb-10 text-left"
+          id="focus_commentary_card"
+        >
+          {activeTab === "meaning" && (
+            <p className="text-neutral-700 font-serif italic text-base leading-relaxed">
+              "{verse.simpleMeaning}"
+            </p>
+          )}
+
+          {activeTab === "context" && (
+            <div>
+              <h4 className="text-[10px] font-bold tracking-widest text-[#1A1A1A] uppercase mb-2 font-sans border-b border-gray-100 pb-1.5">
+                Scriptural Backdrop & Context
+              </h4>
+              <p className="text-neutral-600 text-sm leading-relaxed font-sans">
+                {verse.context}
+              </p>
+            </div>
+          )}
+
+          {activeTab === "application" && (
+            <div>
+              <h4 className="text-[10px] font-bold tracking-widest text-[#1A1A1A] uppercase mb-2 font-sans border-b border-gray-100 pb-1.5">
+                Practical Application
+              </h4>
+              <p className="text-neutral-600 text-sm leading-relaxed font-sans">
+                {verse.application}
+              </p>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Scripture Display Block */}
       <div className="text-center mb-10" id="focus_scripture_core">
         <span className="font-serif text-base tracking-wider font-extrabold text-[#1A1A1A] uppercase block mb-6 italic">
           {verse.reference}
@@ -179,49 +223,6 @@ export default function FocusView({ verse, onBack }: FocusViewProps) {
         </div>
       </div>
 
-      {/* Contextual Meaning Card Block based on Active Tab */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25 }}
-          className="bg-white border-2 border-[#1A1A1A] rounded-none p-6 shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] mb-10 text-left"
-          id="focus_commentary_card"
-        >
-          {activeTab === "meaning" && (
-            <div>
-              <p className="text-neutral-700 font-serif italic text-base leading-relaxed">
-                "{verse.simpleMeaning}"
-              </p>
-            </div>
-          )}
-
-          {activeTab === "context" && (
-            <div>
-              <h4 className="text-[10px] font-bold tracking-widest text-[#1A1A1A] uppercase mb-2 font-sans border-b border-gray-100 pb-1.5">
-                Scriptural Backdrop & Context
-              </h4>
-              <p className="text-neutral-600 text-sm leading-relaxed font-sans">
-                {verse.context}
-              </p>
-            </div>
-          )}
-
-          {activeTab === "application" && (
-            <div>
-              <h4 className="text-[10px] font-bold tracking-widest text-[#1A1A1A] uppercase mb-2 font-sans border-b border-gray-100 pb-1.5">
-                Practical Application Guideline
-              </h4>
-              <p className="text-neutral-600 text-sm leading-relaxed font-sans">
-                {verse.application}
-              </p>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
-
       {/* Main button overlay actions */}
       <div className="space-y-4" id="focus_save_section">
         <button
@@ -233,8 +234,8 @@ export default function FocusView({ verse, onBack }: FocusViewProps) {
           <span>Keep Marked Progress Study</span>
         </button>
 
-        <p className="text-center text-[10px] text-neutral-450 font-sans tracking-widest uppercase">
-          Select individual scripture paragraphs above to mark bookmarks
+        <p className={`text-center text-[10px] font-sans tracking-widest uppercase transition-colors ${highlightHint ? "text-red-500 font-bold" : "text-neutral-450"}`}>
+          {highlightHint ? "Tap a verse paragraph first to select it" : "Tap verse paragraphs above to highlight them"}
         </p>
 
         {/* Saved breakthrough badge feedback */}

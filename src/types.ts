@@ -13,6 +13,7 @@ export interface UserStats {
 
 export interface ScriptureVerse {
   id: string;
+  planId: string;
   reference: string;
   verseLines: string[];
   simpleMeaning: string;
@@ -22,6 +23,14 @@ export interface ScriptureVerse {
   actionStep: string;
   dayNumber: number;
   totalDays: number;
+}
+
+export interface ReadingPlan {
+  id: string;
+  title: string;
+  description: string;
+  totalDays: number;
+  theme: string;
 }
 
 export interface Prayer {
@@ -60,6 +69,27 @@ export interface PathStage {
     text: string;
     completed: boolean;
   }[];
+}
+
+export interface CurriculumLesson {
+  id: string;
+  title: string;
+  goal: string;
+  scripture: string;
+  practice: string;
+  verseId: string;
+}
+
+export interface CurriculumTopic {
+  id: string;
+  title: string;
+  lessons: CurriculumLesson[];
+}
+
+export interface CurriculumPlan {
+  id: string;
+  title: string;
+  topics: CurriculumTopic[];
 }
 
 export type SubscriptionTier = "free" | "disciple_plus" | "church_leader";
