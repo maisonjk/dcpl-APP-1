@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   BookOpen,
+  BookMarked,
   Users,
   Compass,
   Bell,
@@ -449,9 +450,14 @@ function PermissionsScreen({ onDone }: { onDone: () => void }) {
 // ─── Tutorial ─────────────────────────────────────────────────────────────────
 const TIPS = [
   {
+    icon: BookMarked,
+    title: "Choose a reading plan",
+    body: "Go to the Reading tab and pick a plan that fits your season — a scripture journey, a topic study, or the full discipleship curriculum.",
+  },
+  {
     icon: BookOpen,
-    title: "Open the Word",
-    body: "Start on the Home tab. Your daily verse and study are ready every morning.",
+    title: "Then open the Word",
+    body: "Once your plan is active, return to Home each morning. Your daily verse, reflection, and study will be waiting.",
   },
   {
     icon: Check,
