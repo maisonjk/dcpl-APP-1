@@ -102,7 +102,7 @@ export default function PricingView({ onSignUpRequired }: PricingViewProps) {
         "Up to 100 members",
         "Group discipleship tracking",
         "Leader tools",
-        "Custom reading plans",
+        "Custom study plans",
         "Prayer request management",
         "Church branding",
         "Engagement analytics",

@@ -349,7 +349,7 @@ export default function App() {
               {activeTab === "bible" && (
                 <div className="space-y-8 text-left" id="bible_tab_container">
                   <div className="border-l-4 border-[#1A1A1A] pl-5 space-y-1.5">
-                    <span className="font-sans text-[11px] text-[#1A1A1A] uppercase tracking-[0.2em] font-bold block">Reading Plans</span>
+                    <span className="font-sans text-[11px] text-[#1A1A1A] uppercase tracking-[0.2em] font-bold block">Study Plans</span>
                     <h2 className="font-serif text-3xl font-bold text-[#1A1A1A]">Word Study</h2>
                     <p className="text-sm text-neutral-500 font-sans leading-relaxed">
                       {activePlanId ? "Your active plan is shown below." : "Choose a plan to begin your daily Word study."}
@@ -385,7 +385,7 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Active plan — reading plan */}
+                  {/* Active plan — study plan */}
                   {activePlanId && activePlanId !== "curriculum" && (() => {
                     const plan = READING_PLANS.find(p => p.id === activePlanId);
                     if (!plan) return null;

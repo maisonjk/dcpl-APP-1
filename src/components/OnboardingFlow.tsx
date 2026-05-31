@@ -78,7 +78,7 @@ const SLIDES = [
   {
     eyebrow: "Scripture",
     headline: "Walk in the\nWord daily.",
-    body: "A fresh verse, reflection, and invitation every morning — aligned to a reading plan designed around your season of faith.",
+    body: "A fresh verse, reflection, and invitation every morning — aligned to a study plan designed around your season of faith.",
     icon: BookOpen,
     accent: "#1A1A1A",
   },
@@ -451,8 +451,8 @@ function PermissionsScreen({ onDone }: { onDone: () => void }) {
 const TIPS = [
   {
     icon: BookMarked,
-    title: "Choose a reading plan",
-    body: "Go to the Reading tab and pick a plan that fits your season — a scripture journey, a topic study, or the full discipleship curriculum.",
+    title: "Choose a study plan",
+    body: "Go to the Study tab and pick a plan that fits your season — a scripture journey, a topic study, or the full discipleship curriculum.",
   },
   {
     icon: BookOpen,
