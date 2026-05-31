@@ -521,7 +521,7 @@ export default function App() {
             title="Home"
           >
             <Home className={`w-5 h-5 ${activeTab === "home" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
-            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Home</span>
+            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Home</span>
           </button>
           <button
             onClick={() => { setActiveTab("bible"); setIsStudyMode(false); setIsCurriculumMode(false); }}
@@ -529,7 +529,7 @@ export default function App() {
             title="Bible"
           >
             <BookOpen className={`w-5 h-5 ${activeTab === "bible" || isStudyMode ? "stroke-[2.5]" : ""}`} />
-            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Reading</span>
+            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Reading</span>
           </button>
           <button
             onClick={() => { setActiveTab("path"); setIsStudyMode(false); setIsCurriculumMode(false); }}
@@ -537,7 +537,7 @@ export default function App() {
             title="Path"
           >
             <TrendingUp className={`w-5 h-5 ${activeTab === "path" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
-            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Path</span>
+            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Path</span>
           </button>
           <button
             onClick={() => { setActiveTab("mission"); setIsStudyMode(false); setIsCurriculumMode(false); }}
@@ -545,7 +545,7 @@ export default function App() {
             title="Mission"
           >
             <Compass className={`w-5 h-5 ${activeTab === "mission" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
-            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Mission</span>
+            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Mission</span>
           </button>
           <button
             onClick={() => { setActiveTab("prayer"); setIsStudyMode(false); setIsCurriculumMode(false); }}
@@ -553,7 +553,7 @@ export default function App() {
             title="Prayer"
           >
             <BookMarked className={`w-5 h-5 ${activeTab === "prayer" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
-            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Prayer</span>
+            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Prayer</span>
           </button>
           <button
             onClick={() => { setActiveTab("pricing"); setIsStudyMode(false); setIsCurriculumMode(false); }}
@@ -561,7 +561,7 @@ export default function App() {
             title="Plans"
           >
             <Zap className={`w-5 h-5 ${activeTab === "pricing" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
-            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Plans</span>
+            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Plans</span>
           </button>
         </div>
       </nav>

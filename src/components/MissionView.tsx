@@ -106,7 +106,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
     >
       {/* Visual Header Panel block */}
       <section className="text-left border-l-4 border-[#1A1A1A] pl-5 space-y-1.5" id="mission_heading">
-        <span className="font-sans text-[10px] text-[#1A1A1A] uppercase tracking-[0.2em] font-bold block">
+        <span className="font-sans text-[10px] text-neutral-400 uppercase tracking-[0.12em] font-semibold block">
           Kingdom Action
         </span>
         <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A]">
@@ -140,7 +140,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
               {mission.status === "idle" && (
                 <button
                   onClick={() => handleStartMission(mission.id)}
-                  className="w-full border-2 border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white py-3.5 font-sans text-[9px] font-bold uppercase tracking-[0.2em] transition duration-200 rounded-none cursor-pointer"
+                  className="w-full border-2 border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white py-3.5 font-sans text-xs font-bold uppercase tracking-wider transition duration-200 rounded-none cursor-pointer"
                 >
                   Start Mission
                 </button>
@@ -149,7 +149,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
               {mission.status === "active" && (
                 <button
                   onClick={() => handleCompleteMission(mission.id)}
-                  className="w-full bg-[#1A1A1A] text-white hover:bg-neutral-800 py-3.5 font-sans text-[9px] font-bold uppercase tracking-[0.2em] transition duration-200 animate-pulse flex items-center justify-center gap-1.5 rounded-none cursor-pointer"
+                  className="w-full bg-[#1A1A1A] text-white hover:bg-neutral-800 py-3.5 font-sans text-xs font-bold uppercase tracking-wider transition duration-200 animate-pulse flex items-center justify-center gap-1.5 rounded-none cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-white" />
                   <span>Complete Mission</span>
@@ -157,7 +157,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
               )}
 
               {mission.status === "completed" && (
-                <div className="w-full bg-neutral-100 border-2 border-[#1A1A1A] text-[#1A1A1A] py-3.5 font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-center flex items-center justify-center gap-1 rounded-none">
+                <div className="w-full bg-neutral-100 border-2 border-[#1A1A1A] text-[#1A1A1A] py-3.5 font-sans text-xs font-bold uppercase tracking-wider text-center flex items-center justify-center gap-1 rounded-none">
                   <Check className="w-3.5 h-3.5 text-emerald-600 font-bold" />
                   <span>Completed Today</span>
                 </div>
@@ -177,9 +177,9 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
             exit={{ opacity: 0 }}
             className="border-2 border-[#1A1A1A] bg-[#1A1A1A] text-white p-6 text-center space-y-1"
           >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Mission Complete</p>
-            <p className="font-serif text-lg font-bold">{completedMissionTitle}</p>
-            <p className="text-[10px] text-neutral-400 italic">"Well done, good and faithful servant." — Matthew 25:23</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400 font-sans">Mission Complete</p>
+            <p className="font-serif text-xl font-bold">{completedMissionTitle}</p>
+            <p className="text-xs text-neutral-400 italic font-sans mt-1">"Well done, good and faithful servant." — Matthew 25:23</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -218,35 +218,35 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
           <div className="relative z-10 flex justify-between" id="progress_points">
             <div className="flex flex-col items-center gap-2">
               <div className={`w-3.5 h-3.5 rounded-none border-2 transition ${isBeginning ? "bg-[#1A1A1A] border-[#1A1A1A]" : "bg-white border-neutral-300"}`} />
-              <span className={`text-[8px] font-bold uppercase tracking-widest ${isBeginning ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
+              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isBeginning ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
                 Beginning
               </span>
             </div>
 
             <div className="flex flex-col items-center gap-2">
               <div className={`w-3.5 h-3.5 rounded-none border-2 transition ${isConsistent ? "bg-[#1A1A1A] border-[#1A1A1A]" : "bg-white border-neutral-300"}`} />
-              <span className={`text-[8px] font-bold uppercase tracking-widest ${isConsistent ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
+              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isConsistent ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
                 Consistent
               </span>
             </div>
 
             <div className="flex flex-col items-center gap-2">
               <div className={`w-3.5 h-3.5 rounded-none border-2 transition ${isInfluencer ? "bg-[#1A1A1A] border-[#1A1A1A]" : "bg-white border-neutral-300"}`} />
-              <span className={`text-[8px] font-bold uppercase tracking-widest ${isInfluencer ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
+              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isInfluencer ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
                 Influencer
               </span>
             </div>
 
             <div className="flex flex-col items-center gap-2">
               <div className={`w-3.5 h-3.5 rounded-none border-2 transition ${isLeader ? "bg-[#1A1A1A] border-[#1A1A1A]" : "bg-white border-neutral-300"}`} />
-              <span className={`text-[8px] font-bold uppercase tracking-widest ${isLeader ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
+              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isLeader ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
                 Leader
               </span>
             </div>
 
             <div className="flex flex-col items-center gap-2">
               <div className={`w-3.5 h-3.5 rounded-none border-2 transition ${isApostle ? "bg-[#1A1A1A] border-[#1A1A1A]" : "bg-white border-neutral-300"}`} />
-              <span className={`text-[8px] font-bold uppercase tracking-widest ${isApostle ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
+              <span className={`text-[9px] font-semibold uppercase tracking-wider ${isApostle ? "text-[#1A1A1A]" : "text-neutral-400"}`}>
                 Apostle
               </span>
             </div>

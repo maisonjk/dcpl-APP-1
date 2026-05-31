@@ -565,24 +565,24 @@ export default function HomeView({
       {/* Welcome Message Greeting Section */}
       <section className="flex flex-col gap-4 border-b border-[#1A1A1A] pb-6" id="home_greeting">
         <div>
-          <p className="font-serif text-xl font-bold tracking-tight text-[#1A1A1A]">
+          <p className="text-[10px] font-sans font-semibold uppercase tracking-[0.15em] text-neutral-400 mb-1">
             {(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}
           </p>
-          <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A]">
+          <h2 className="font-serif text-4xl font-bold tracking-tight text-[#1A1A1A] leading-none">
             {stats.username}
           </h2>
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mt-1.5 font-sans whitespace-nowrap">
+          <p className="text-sm text-neutral-400 font-sans mt-2 leading-snug">
             May your path be clear today. Find rest in the silence.
           </p>
         </div>
         <div className="flex items-center gap-4 bg-white px-5 py-2.5 border border-[#1A1A1A] rounded-none" id="stats_quick_badge">
           <div className="text-left border-r border-neutral-200 pr-5">
-            <span className="block text-[9px] uppercase font-bold tracking-widest text-neutral-400 font-sans">Level</span>
+            <span className="block text-[10px] uppercase font-semibold tracking-[0.12em] text-neutral-400 font-sans">Level</span>
             <span className="font-sans text-2xl font-bold text-[#1A1A1A]">{stats.level}</span>
           </div>
           <div className="text-left">
-            <span className="block text-[9px] uppercase font-bold tracking-widest text-neutral-400 font-sans">Streak</span>
-            <span className="font-sans text-2xl font-bold text-[#1A1A1A]">{stats.currentStreak} Days</span>
+            <span className="block text-[10px] uppercase font-semibold tracking-[0.12em] text-neutral-400 font-sans">Streak</span>
+            <span className="font-sans text-2xl font-bold text-[#1A1A1A]">{stats.currentStreak} days</span>
           </div>
         </div>
       </section>
@@ -598,17 +598,17 @@ export default function HomeView({
 
             <div className="relative z-10 space-y-6">
               <div className="flex justify-between items-baseline border-b border-neutral-100 pb-3" id="verse_heading">
-                <span className="font-sans text-[10px] text-[#1A1A1A] uppercase tracking-widest font-bold">
-                  Daily Verse Focus
+                <span className="font-sans text-[10px] text-neutral-400 uppercase tracking-[0.12em] font-semibold">
+                  Daily Verse
                 </span>
-                <span className="font-sans text-[11px] text-neutral-500 italic">
+                <span className="font-sans text-xs text-neutral-500">
                   {verse.reference}
                 </span>
               </div>
 
               {/* The core scripture passage italicized */}
               <div className="space-y-3" id="verse_body">
-                <blockquote className="font-serif text-sm text-[#1A1A1A] leading-relaxed italic text-left line-clamp-4">
+                <blockquote className="font-serif text-base text-[#1A1A1A] leading-loose italic text-left line-clamp-4">
                   {verse.verseLines[0]}
                 </blockquote>
               </div>
@@ -618,7 +618,7 @@ export default function HomeView({
               {/* Reflection summary items */}
               <div className="space-y-5" id="verse_reflection_box">
                 <div>
-                  <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-1 font-sans">
+                  <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-[0.12em] mb-1.5 font-sans">
                     Reflection
                   </p>
                   <p className="text-sm text-neutral-600 leading-relaxed font-sans">
@@ -631,10 +631,10 @@ export default function HomeView({
                     <Sparkles className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <h4 className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mb-1 font-sans">
+                    <h4 className="text-[10px] text-neutral-400 font-semibold uppercase tracking-[0.12em] mb-1.5 font-sans">
                       Today's Invitation
                     </h4>
-                    <p className="text-sm text-[#1A1A1A] font-sans italic">
+                    <p className="text-sm text-[#1A1A1A] font-sans italic leading-relaxed">
                       {verse.actionStep}
                     </p>
                   </div>
@@ -645,14 +645,14 @@ export default function HomeView({
               <div className="pt-4 flex flex-col gap-2" id="verse_actions">
                 <button
                   onClick={onLaunchStudy}
-                  className="bg-[#1A1A1A] hover:bg-neutral-800 text-white font-sans text-[11px] font-bold uppercase tracking-widest py-3 px-6 rounded-none transition-all duration-200 w-full"
+                  className="bg-[#1A1A1A] hover:bg-neutral-800 text-white font-sans text-xs font-bold uppercase tracking-wider py-3 px-6 rounded-none transition-all duration-200 w-full"
                   id="btn_launch_study"
                 >
                   Start Bible Study
                 </button>
                 <button
                   onClick={() => onNavigateTab("path")}
-                  className="text-[10px] font-sans font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-700 py-1 transition-all text-center"
+                  className="text-xs font-sans text-neutral-400 hover:text-neutral-700 py-1 transition-all text-center"
                   id="btn_full_context"
                 >
                   View Growth Journey →
@@ -692,12 +692,9 @@ export default function HomeView({
           {/* Habit Accountability Checklist Status Section */}
           <div className="bg-white border border-[#1A1A1A] rounded-none p-6" id="card_habits">
             <div className="flex items-center justify-between mb-6 border-b border-neutral-100 pb-3" id="habits_header">
-              <h3 className="font-sans text-[11px] text-[#1A1A1A] uppercase tracking-widest font-bold">
-                Accountability Checklist
+              <h3 className="font-sans text-[10px] text-neutral-400 uppercase tracking-[0.12em] font-semibold">
+                Daily Habits
               </h3>
-              <span className="text-[10px] uppercase font-sans tracking-wider text-neutral-400 font-medium">
-                Today's Spiritual Habits
-              </span>
             </div>
 
             <div className="grid grid-cols-3 gap-3" id="habits_grid">
@@ -716,7 +713,7 @@ export default function HomeView({
                 }`}>
                   <Compass className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-sans uppercase tracking-widest text-[9px] font-bold">Prayer</span>
+                <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Prayer</span>
                 {stats.checklist.prayer && (
                   <div className="absolute right-2 top-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -739,7 +736,7 @@ export default function HomeView({
                 }`}>
                   <BookOpen className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-sans uppercase tracking-widest text-[9px] font-bold">Word</span>
+                <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Word</span>
                 {stats.checklist.word && (
                   <div className="absolute right-2 top-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -762,7 +759,7 @@ export default function HomeView({
                 }`}>
                   <Heart className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-sans uppercase tracking-widest text-[9px] font-bold">Obedience</span>
+                <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Obedience</span>
                 {stats.checklist.obedience && (
                   <div className="absolute right-2 top-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-white" />
@@ -780,19 +777,19 @@ export default function HomeView({
                 All done for today 🙏 Come back tomorrow.
               </motion.p>
             ) : (
-              <p className="text-[10px] text-neutral-400 text-center mt-4 uppercase tracking-widest font-sans font-bold">
-                Tap habits above to toggle your check-in status
+              <p className="text-xs text-neutral-400 text-center mt-4 font-sans">
+                Tap a habit above to check it off for today.
               </p>
             )}
 
             {/* 7-day Habit Consistency Sparkline */}
             <div className="mt-6 pt-5 border-t border-neutral-100" id="habits_sparkline_section">
               <div className="flex justify-between items-baseline mb-4" id="habits_sparkline_title">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A] font-sans">
-                  7-Day Habit Consistency Wave
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400 font-sans">
+                  7-Day Consistency
                 </span>
-                <span className="text-[8px] font-mono text-neutral-400 uppercase tracking-widest">
-                  Daily Completions (0-3)
+                <span className="text-[10px] font-sans text-neutral-400">
+                  0–3 habits / day
                 </span>
               </div>
               

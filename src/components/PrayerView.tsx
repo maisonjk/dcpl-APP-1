@@ -128,7 +128,7 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
       className="max-w-[700px] mx-auto space-y-8 pb-28 text-left"
     >
       <div className="border-l-4 border-[#1A1A1A] pl-5 space-y-1.5">
-        <span className="font-sans text-[11px] text-[#1A1A1A] uppercase tracking-[0.2em] font-bold block">
+        <span className="font-sans text-[10px] text-neutral-400 uppercase tracking-[0.12em] font-semibold block">
           Prayer Journal
         </span>
         <h2 className="font-serif text-3xl font-bold text-[#1A1A1A]">Your Prayers</h2>
@@ -173,7 +173,7 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
             <button
               type="submit"
               disabled={isSaving || !newText.trim()}
-              className="flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 text-[10px] uppercase font-bold tracking-widest hover:bg-neutral-800 transition disabled:opacity-50"
+              className="flex items-center gap-2 bg-[#1A1A1A] text-white px-5 py-2.5 text-xs uppercase font-bold tracking-wider hover:bg-neutral-800 transition disabled:opacity-50"
             >
               {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
               Add Prayer
@@ -219,7 +219,7 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => openSharePicker(prayer)}
-                    className={`flex items-center gap-1 border text-[9px] font-bold uppercase tracking-widest px-2 py-1 transition ${
+                    className={`flex items-center gap-1 border text-[10px] font-bold uppercase tracking-wider px-2 py-1 transition ${
                       prayer.shared
                         ? "bg-[#1A1A1A] text-white border-[#1A1A1A]"
                         : "border-neutral-300 text-neutral-400 hover:border-[#1A1A1A] hover:text-[#1A1A1A]"
@@ -241,12 +241,12 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
               <div className="flex items-center justify-between">
                 <div className="flex gap-1.5 flex-wrap">
                   {prayer.categoryTags.map((tag) => (
-                    <span key={tag} className="text-[8px] font-bold uppercase tracking-widest bg-neutral-100 px-2 py-0.5 text-neutral-500">
+                    <span key={tag} className="text-[9px] font-bold uppercase tracking-wider bg-neutral-100 px-2 py-0.5 text-neutral-500">
                       {tag}
                     </span>
                   ))}
                 </div>
-                <span className="text-[10px] text-neutral-400 font-mono">{prayer.timestamp}</span>
+                <span className="text-xs text-neutral-400 font-sans">{prayer.timestamp}</span>
               </div>
 
               {prayer.answered ? (
@@ -258,7 +258,7 @@ export default function PrayerView({ onUpgrade }: PrayerViewProps) {
                 <div>
                   <button
                     onClick={() => setExpandedId(expandedId === prayer.id ? null : prayer.id)}
-                    className="text-[10px] uppercase font-bold text-neutral-400 tracking-widest hover:text-[#1A1A1A] flex items-center gap-1 transition"
+                    className="text-xs font-semibold text-neutral-400 hover:text-[#1A1A1A] flex items-center gap-1 transition"
                   >
                     {expandedId === prayer.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     Mark Answered
