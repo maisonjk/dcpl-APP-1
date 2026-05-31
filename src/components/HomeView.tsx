@@ -389,9 +389,16 @@ function AccountabilityCircle() {
       {activeSection === "prayers" && !loading && (
         <div className="space-y-3">
           {feed.length === 0 ? (
-            <div className="text-center py-6 space-y-1">
+            <div className="text-center py-6 space-y-3">
               <MessageCircle className="w-7 h-7 text-neutral-200 mx-auto" />
-              <p className="text-xs text-neutral-400 font-sans italic">No shared prayers yet. Ask your partners to share a prayer.</p>
+              <p className="text-xs text-neutral-400 font-sans italic">No shared prayers yet.</p>
+              <p className="text-[10px] text-neutral-400 font-sans">Share a prayer from your Prayer Journal and your circle can pray with you.</p>
+              <button
+                onClick={() => onNavigateTab("prayer")}
+                className="text-[9px] font-bold uppercase tracking-widest border border-[#1A1A1A] px-4 py-2 hover:bg-[#1A1A1A] hover:text-white transition"
+              >
+                Open Prayer Journal →
+              </button>
             </div>
           ) : (
             feed.map((p) => (
