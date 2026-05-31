@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import {
   Compass,
   TrendingUp,
   BookOpen,
   Heart,
+  MessageCircle,
   Eye,
   CheckCircle,
   HelpCircle,
@@ -12,8 +13,15 @@ import {
   ArrowRight,
   Plus,
   Send,
-  Users
+  Users,
+  UserPlus,
+  Check,
+  X,
+  Clock,
+  Loader2,
 } from "lucide-react";
+import { api, AccountabilityPartner, CirclePrayer, CircleCheckin, Encouragement } from "../api";
+import { useAuth } from "../auth/AuthContext";
 import {
   LineChart,
   Line,
@@ -78,15 +86,13 @@ const getHabitHistoryData = (checklist: { prayer: boolean; word: boolean; obedie
   // Update today's count in the history store
   historyStore[todayKey] = todayCount;
   
-  // Seed past 6 days deterministically if they do not exist
+  // Past days default to 0 if no real data recorded yet
   for (let i = 6; i >= 1; i--) {
     const d = new Date();
     d.setDate(today.getDate() - i);
     const key = d.toISOString().split("T")[0];
     if (historyStore[key] === undefined) {
-      // Create a wavy trend of completions keys
-      const mockCounts = [2, 3, 1, 3, 2, 3];
-      historyStore[key] = mockCounts[i % mockCounts.length];
+      historyStore[key] = 0;
     }
   }
   
@@ -110,6 +116,381 @@ const getHabitHistoryData = (checklist: { prayer: boolean; word: boolean; obedie
   return data;
 };
 
+function AccountabilityCircle() {
+  const { user } = useAuth();
+  const [partners, setPartners] = useState<AccountabilityPartner[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
+  const [query, setQuery] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [encouraged, setEncouraged] = useState<string | null>(null);
+  const [feed, setFeed] = useState<CirclePrayer[]>([]);
+  const [checkins, setCheckins] = useState<CircleCheckin[]>([]);
+  const [encouragements, setEncouragements] = useState<Encouragement[]>([]);
+  const [activeSection, setActiveSection] = useState<"partners" | "prayers" | "checkins">("partners");
+  const [encouragedIds, setEncouragedIds] = useState<Set<number>>(new Set());
+
+  const load = useCallback(() => {
+    if (!user) return;
+    setLoading(true);
+    Promise.all([
+      api.accountability.list(),
+      api.accountability.feed(),
+      api.accountability.checkins(),
+      api.accountability.encouragements(),
+    ])
+      .then(([p, f, c, e]) => {
+        setPartners(p);
+        setFeed(f);
+        setCheckins(c);
+        setEncouragements(e);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [user]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const p = await api.accountability.invite(query.trim());
+      setPartners((prev) => [p, ...prev]);
+      setQuery("");
+      setShowInvite(false);
+    } catch (err: any) {
+      setError(err.data?.error || err.message || "Could not send invite");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAccept = async (id: number) => {
+    await api.accountability.accept(id);
+    setPartners((prev) => prev.map((p) => p.id === id ? { ...p, status: "accepted" } : p));
+  };
+
+  const handleRemove = async (id: number) => {
+    await api.accountability.remove(id);
+    setPartners((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const handleEncourage = (name: string) => {
+    setEncouraged(name);
+    setTimeout(() => setEncouraged(null), 3000);
+  };
+
+  const handleReactPrayer = async (prayerId: number) => {
+    const result = await api.accountability.reactPrayer(prayerId);
+    setFeed((prev) => prev.map((p) => p.id === prayerId
+      ? { ...p, iReacted: result.reacted, reactionCount: p.reactionCount + (result.reacted ? 1 : -1) }
+      : p
+    ));
+  };
+
+  const handleSendEncouragement = async (partnerId: number) => {
+    await api.accountability.encourage(partnerId);
+    setEncouragedIds((prev) => new Set([...prev, partnerId]));
+  };
+
+  const initials = (n: string) => n.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+
+  const accepted = partners.filter((p) => p.status === "accepted");
+  const pendingReceived = partners.filter((p) => p.status === "pending" && p.direction === "received");
+  const pendingSent = partners.filter((p) => p.status === "pending" && p.direction === "sent");
+
+  if (!user) {
+    return (
+      <div className="bg-white border border-[#1A1A1A] rounded-none p-6" id="card_accountability_circle">
+        <h4 className="font-sans text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-4">Accountability Circle</h4>
+        <div className="text-center py-4 space-y-2">
+          <Users className="w-8 h-8 text-neutral-200 mx-auto" />
+          <p className="text-xs text-neutral-400 font-sans">Sign in to connect with accountability partners.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-[#1A1A1A] rounded-none p-6" id="card_accountability_circle">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="font-sans text-[11px] text-neutral-400 uppercase tracking-widest font-bold">
+          Accountability Circle
+        </h4>
+        <button
+          onClick={() => { setActiveSection("partners"); setShowInvite((v) => !v); setError(null); }}
+          className="flex items-center gap-1 px-2.5 py-1.5 border border-[#1A1A1A] text-[9px] font-bold uppercase tracking-wider hover:bg-[#1A1A1A] hover:text-white transition-all"
+        >
+          <UserPlus className="w-3 h-3" />
+          <span>Invite</span>
+        </button>
+      </div>
+
+      {/* Tab bar */}
+      <div className="flex mb-5 border-b border-neutral-200">
+        {(["partners", "prayers", "checkins"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveSection(tab)}
+            className={`px-3 py-2 text-[9px] font-bold uppercase tracking-widest transition border-b-2 -mb-px ${
+              activeSection === tab
+                ? "border-[#1A1A1A] text-[#1A1A1A]"
+                : "border-transparent text-neutral-400 hover:text-[#1A1A1A]"
+            }`}
+          >
+            {tab === "partners" ? "Partners" : tab === "prayers" ? "Circle Prayers" : "Check-ins"}
+          </button>
+        ))}
+      </div>
+
+      {loading && (
+        <div className="flex justify-center py-4">
+          <Loader2 className="w-4 h-4 animate-spin text-neutral-400" />
+        </div>
+      )}
+
+      {/* Partners tab */}
+      {activeSection === "partners" && !loading && (
+        <div>
+          {/* Invite form */}
+          {showInvite && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="mb-5 border border-dashed border-[#1A1A1A] p-4 space-y-2 overflow-hidden"
+            >
+              <p className="text-[10px] text-neutral-500 font-sans">Enter their username or email address.</p>
+              <form onSubmit={handleInvite} className="flex gap-2">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="username or email"
+                  className="flex-1 border border-neutral-200 px-3 py-2 text-xs focus:outline-none focus:border-[#1A1A1A] rounded-none"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="bg-[#1A1A1A] text-white px-3 py-2 text-[9px] font-bold uppercase tracking-wider hover:bg-neutral-800 transition disabled:opacity-50 flex items-center gap-1"
+                >
+                  {submitting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                  <span>Send</span>
+                </button>
+              </form>
+              {error && <p className="text-[10px] text-red-500 font-bold">{error}</p>}
+            </motion.div>
+          )}
+
+          {/* Pending invites received */}
+          {pendingReceived.length > 0 && (
+            <div className="mb-4 space-y-3">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 font-sans">Pending invites</p>
+              {pendingReceived.map((p) => (
+                <div key={p.id} className="flex items-center justify-between bg-neutral-50 border border-neutral-200 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 border border-neutral-300 bg-neutral-100 flex items-center justify-center text-[10px] font-bold text-neutral-500">
+                      {initials(p.username)}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-neutral-800">{p.username}</p>
+                      <p className="text-[10px] text-neutral-400">Wants to join your circle</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleAccept(p.id)}
+                      className="px-2 py-1 bg-[#1A1A1A] text-white text-[9px] font-bold uppercase tracking-wider hover:bg-neutral-800 transition flex items-center gap-1"
+                    >
+                      <Check className="w-3 h-3" /> Accept
+                    </button>
+                    <button onClick={() => handleRemove(p.id)} className="text-neutral-300 hover:text-red-500 transition">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Accepted partners */}
+          {accepted.length > 0 && (
+            <div className="space-y-4">
+              {accepted.map((p) => (
+                <div key={p.id} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 border border-[#1A1A1A] bg-neutral-100 flex items-center justify-center text-xs font-bold text-neutral-600">
+                      {initials(p.username)}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-neutral-800">{p.username}</p>
+                      <p className="text-[10px] text-neutral-400">In your circle</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleEncourage(p.username)}
+                      className="px-2 py-1 border border-[#1A1A1A] text-[9px] font-bold uppercase tracking-wider hover:bg-[#1A1A1A] hover:text-white transition-all"
+                    >
+                      Encourage
+                    </button>
+                    <button onClick={() => handleRemove(p.id)} className="text-neutral-300 hover:text-red-500 transition">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Sent and awaiting */}
+          {pendingSent.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-neutral-400 font-sans">Awaiting response</p>
+              {pendingSent.map((p) => (
+                <div key={p.id} className="flex items-center justify-between py-2 border-b border-neutral-100 last:border-0">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5 text-neutral-300" />
+                    <p className="text-xs text-neutral-500">{p.username}</p>
+                  </div>
+                  <button onClick={() => handleRemove(p.id)} className="text-neutral-300 hover:text-red-500 transition">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Empty state */}
+          {accepted.length === 0 && pendingReceived.length === 0 && pendingSent.length === 0 && !showInvite && (
+            <div className="text-center py-6 space-y-2">
+              <Users className="w-8 h-8 text-neutral-200 mx-auto" />
+              <p className="text-xs text-neutral-400 font-sans">No partners yet.</p>
+              <p className="text-[10px] text-neutral-400 font-sans">Invite someone by their username or email.</p>
+            </div>
+          )}
+
+          {encouraged && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 p-2.5 bg-neutral-100 border border-[#1A1A1A] text-[#1A1A1A] text-[10px] font-bold uppercase tracking-widest text-center"
+            >
+              Encouragement sent to {encouraged}!
+            </motion.div>
+          )}
+        </div>
+      )}
+
+      {/* Circle Prayers tab */}
+      {activeSection === "prayers" && !loading && (
+        <div className="space-y-3">
+          {feed.length === 0 ? (
+            <div className="text-center py-6 space-y-1">
+              <MessageCircle className="w-7 h-7 text-neutral-200 mx-auto" />
+              <p className="text-xs text-neutral-400 font-sans italic">No shared prayers yet. Ask your partners to share a prayer.</p>
+            </div>
+          ) : (
+            feed.map((p) => (
+              <div key={p.id} className="border border-neutral-200 bg-white p-4 space-y-2">
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 flex-shrink-0 border border-neutral-300 bg-neutral-100 flex items-center justify-center text-[9px] font-bold text-neutral-500">
+                    {p.username[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[10px] font-bold text-neutral-700 uppercase tracking-wider">{p.username}</span>
+                      {p.answered && (
+                        <span className="text-[8px] font-bold uppercase tracking-widest bg-green-100 text-green-700 px-1.5 py-0.5">✓ Answered</span>
+                      )}
+                      <span className="text-[9px] text-neutral-400 ml-auto">{p.timestamp}</span>
+                    </div>
+                    <p className="text-xs text-neutral-700 font-sans leading-relaxed line-clamp-3">{p.text}</p>
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => handleReactPrayer(p.id)}
+                    className={`flex items-center gap-1.5 border text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 transition ${
+                      p.iReacted
+                        ? "bg-[#1A1A1A] text-white border-[#1A1A1A]"
+                        : "border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white"
+                    }`}
+                  >
+                    🙏 Praying{p.reactionCount > 0 ? ` (${p.reactionCount})` : ""}
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Check-ins tab */}
+      {activeSection === "checkins" && !loading && (
+        <div className="space-y-3">
+          {encouragements.length > 0 && (
+            <div className="p-3 bg-neutral-50 border border-neutral-200 space-y-1">
+              {encouragements.map((e) => (
+                <p key={e.id} className="text-[10px] text-neutral-600 font-sans">
+                  🙏 <span className="font-bold">{e.username}</span> is praying for you today
+                  <span className="text-neutral-400 ml-1">· {e.timestamp}</span>
+                </p>
+              ))}
+            </div>
+          )}
+
+          {checkins.length === 0 ? (
+            <div className="text-center py-6 space-y-1">
+              <Heart className="w-7 h-7 text-neutral-200 mx-auto" />
+              <p className="text-xs text-neutral-400 font-sans italic">Accept partners to see their check-ins.</p>
+            </div>
+          ) : (
+            checkins.map((c) => (
+              <div key={c.userId} className="border border-neutral-200 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 border border-[#1A1A1A] bg-neutral-100 flex items-center justify-center text-[10px] font-bold text-neutral-600">
+                      {c.username[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-neutral-800">{c.username}</p>
+                      <p className="text-[9px] text-neutral-400 uppercase tracking-wider">🔥 {c.streak} day streak</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {(["prayer", "word", "obedience"] as const).map((item) => (
+                      <div
+                        key={item}
+                        title={item}
+                        className={`w-3 h-3 border ${c.checklist[item] ? "bg-[#1A1A1A] border-[#1A1A1A]" : "border-neutral-300 bg-white"}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleSendEncouragement(c.userId)}
+                  disabled={encouragedIds.has(c.userId)}
+                  className={`w-full border text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 transition ${
+                    encouragedIds.has(c.userId)
+                      ? "bg-neutral-100 border-neutral-200 text-neutral-400 cursor-default"
+                      : "border-[#1A1A1A] text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white"
+                  }`}
+                >
+                  {encouragedIds.has(c.userId) ? "Sent ✓" : "I'm praying for you today 🙏"}
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface HomeViewProps {
   stats: UserStats;
   verse: ScriptureVerse;
@@ -125,7 +506,6 @@ export default function HomeView({
   onLaunchStudy,
   onNavigateTab
 }: HomeViewProps) {
-  const [showEncourageNotification, setShowEncourageNotification] = useState<string | null>(null);
   const [affirmationIndex, setAffirmationIndex] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -168,11 +548,6 @@ export default function HomeView({
     });
   };
 
-  const handleEncourage = (name: string) => {
-    setShowEncourageNotification(`Sent high-key encouragement to ${name}!`);
-    setTimeout(() => setShowEncourageNotification(null), 3000);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -184,7 +559,7 @@ export default function HomeView({
       <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1A1A1A] pb-6" id="home_greeting">
         <div>
           <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A]">
-            Good morning, <span className="italic">{stats.username}</span>
+            {(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}, <span className="italic">{stats.username}</span>
           </h2>
           <p className="text-xs uppercase tracking-widest text-neutral-500 mt-1.5 font-sans">
             May your path be clear today. Find rest in the silence.
@@ -387,9 +762,20 @@ export default function HomeView({
                 )}
               </button>
             </div>
-            <p className="text-[10px] text-neutral-400 text-center mt-4 uppercase tracking-widest font-sans font-bold">
-              Tap habits above to toggle your check-in status
-            </p>
+            {stats.checklist.prayer && stats.checklist.word && stats.checklist.obedience ? (
+              <motion.p
+                key="all-done"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-[10px] text-[#1A1A1A] text-center mt-4 uppercase tracking-widest font-sans font-bold"
+              >
+                All done for today 🙏 Come back tomorrow.
+              </motion.p>
+            ) : (
+              <p className="text-[10px] text-neutral-400 text-center mt-4 uppercase tracking-widest font-sans font-bold">
+                Tap habits above to toggle your check-in status
+              </p>
+            )}
 
             {/* 7-day Habit Consistency Sparkline */}
             <div className="mt-6 pt-5 border-t border-neutral-100" id="habits_sparkline_section">
@@ -498,7 +884,7 @@ export default function HomeView({
                 Today's Action Step
               </span>
               <p className="font-serif text-xl font-bold text-[#1A1A1A] leading-snug mb-6 italic">
-                "Write down three things you&apos;re surrendering today in prayer."
+                "{verse.actionStep}"
               </p>
             </div>
             <button
@@ -525,28 +911,40 @@ export default function HomeView({
               <div className="absolute left-[20px] top-2 bottom-2 w-px bg-neutral-200" />
 
               <div className="flex items-center gap-4 relative">
-                <div className="w-4 h-4 bg-neutral-200 border border-[#1A1A1A] flex items-center justify-center text-white z-10" />
+                <div className="w-4 h-4 bg-[#1A1A1A] border border-[#1A1A1A] flex items-center justify-center z-10">
+                  <div className="w-1.5 h-1.5 bg-white" />
+                </div>
                 <div className="text-left">
-                  <p className="text-xs font-semibold text-neutral-400 line-through">Foundations of Grace</p>
-                  <p className="text-[10px] text-neutral-400">Completed stage 1 & 2</p>
+                  <p className="text-xs font-semibold text-neutral-400 line-through">Seeker</p>
+                  <p className="text-[10px] text-neutral-400">Completed</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 relative">
-                <div className="w-4 h-4 bg-[#1A1A1A] flex items-center justify-center z-10">
+                <div className="w-4 h-4 bg-[#1A1A1A] border border-[#1A1A1A] flex items-center justify-center z-10">
                   <div className="w-1.5 h-1.5 bg-white" />
                 </div>
                 <div className="text-left">
-                  <p className="text-xs font-semibold text-[#1A1A1A]">The Discipline of Prayer</p>
-                  <p className="text-[11px] text-[#1A1A1A] font-medium italic">Currently Active stage (64% progress)</p>
+                  <p className="text-xs font-semibold text-neutral-400 line-through">Believer</p>
+                  <p className="text-[10px] text-neutral-400">Completed</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 relative">
+                <div className="w-4 h-4 bg-white border-2 border-[#1A1A1A] flex items-center justify-center z-10">
+                  <div className="w-1.5 h-1.5 bg-[#1A1A1A] animate-pulse" />
+                </div>
+                <div className="text-left">
+                  <p className="text-xs font-semibold text-[#1A1A1A]">Disciple</p>
+                  <p className="text-[11px] text-[#1A1A1A] font-medium italic">Active — see Path for progress</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 relative">
                 <div className="w-4 h-4 border border-dashed border-neutral-400 bg-white z-10" />
                 <div className="text-left">
-                  <p className="text-xs font-semibold text-neutral-400">Quietness &amp; Trust</p>
-                  <p className="text-[10px] text-neutral-400">Next milestone stage</p>
+                  <p className="text-xs font-semibold text-neutral-400">Ambassador</p>
+                  <p className="text-[10px] text-neutral-400">Next stage — locked</p>
                 </div>
               </div>
             </div>
@@ -560,62 +958,8 @@ export default function HomeView({
             </button>
           </div>
 
-          {/* Accountability Community circle list */}
-          <div className="bg-white border border-[#1A1A1A] rounded-none p-6" id="card_accountability_circle">
-            <h4 className="font-sans text-[11px] text-neutral-400 uppercase tracking-widest font-bold mb-5">
-              Accountability Circle
-            </h4>
-
-            <div className="space-y-4" id="circle_list">
-              <div className="flex items-center justify-between" id="circle_user_1">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 border border-[#1A1A1A] bg-neutral-100 flex items-center justify-center text-xs font-bold text-neutral-600">
-                    SC
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-neutral-800">Sarah Chen</p>
-                    <p className="text-[10px] text-neutral-400 font-medium">Active Now</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleEncourage("Sarah Chen")}
-                  className="px-2 py-1 border border-[#1A1A1A] text-[9px] font-bold uppercase tracking-wider hover:bg-[#1A1A1A] hover:text-white transition-all"
-                >
-                  Poke
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between" id="circle_user_2">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 border border-neutral-300 bg-neutral-100 flex items-center justify-center text-xs font-bold text-neutral-400">
-                    TW
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-neutral-400">Thomas Wright</p>
-                    <p className="text-[10px] text-neutral-400">Completed Study</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleEncourage("Thomas Wright")}
-                  className="px-3 py-1 bg-[#1A1A1A] text-white text-[9px] font-sans font-bold uppercase tracking-wider transition-colors hover:bg-neutral-800"
-                >
-                  Encourage
-                </button>
-              </div>
-            </div>
-
-            {/* Notification alert toast */}
-            {showEncourageNotification && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="mt-4 p-2.5 bg-neutral-100 border border-[#1A1A1A] text-[#1A1A1A] text-xs text-center"
-              >
-                {showEncourageNotification}
-              </motion.div>
-            )}
-          </div>
+          {/* Accountability Circle */}
+          <AccountabilityCircle />
 
           <div className="text-center px-4">
             <p className="font-serif text-xs italic text-neutral-400">
