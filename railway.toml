@@ -9,3 +9,4 @@ restartPolicyMaxRetries = 3
 
 [variables]
 NIXPACKS_NODE_VERSION = "20"
+NIXPACKS_PKGS = "python3 gcc gnumake"
