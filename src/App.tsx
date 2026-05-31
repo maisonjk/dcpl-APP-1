@@ -31,9 +31,13 @@ import PrayerView from "./components/PrayerView";
 import MissionView from "./components/MissionView";
 import PricingView from "./components/PricingView";
 import CurriculumView from "./components/CurriculumView";
+import OnboardingFlow from "./components/OnboardingFlow";
 
 export default function App() {
   const { user, logout, isLoading: authLoading } = useAuth();
+  const [hasOnboarded, setHasOnboarded] = useState<boolean>(() =>
+    localStorage.getItem("dcpl_onboarded") === "true"
+  );
   const [activeTab, setActiveTab] = useState<string>("home");
   const [tabHistory, setTabHistory] = useState<string[]>([]);
   const [planProgress, setPlanProgress] = useState<Record<string, number>>(() => {
@@ -204,6 +208,19 @@ export default function App() {
       <div className="bg-[#F9F8F6] min-h-screen flex items-center justify-center">
         <div className="w-6 h-6 border-2 border-[#1A1A1A] border-t-transparent rounded-full animate-spin" />
       </div>
+    );
+  }
+
+  if (!hasOnboarded) {
+    return (
+      <OnboardingFlow
+        onComplete={(name) => {
+          const updated = { ...stats, username: name };
+          handleUpdateStats(updated);
+          localStorage.setItem("dcpl_onboarded", "true");
+          setHasOnboarded(true);
+        }}
+      />
     );
   }
 
