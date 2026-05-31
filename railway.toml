@@ -1,12 +1,7 @@
 [build]
-builder = "nixpacks"
-buildCommand = "npm install && npm run build"
+builder = "dockerfile"
 
 [deploy]
 startCommand = "npm run server:prod"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
-
-[variables]
-NIXPACKS_NODE_VERSION = "20"
-NIXPACKS_PKGS = "python3 gcc gnumake"
