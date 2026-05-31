@@ -90,8 +90,8 @@ const SLIDES = [
   },
   {
     eyebrow: "Mission",
-    headline: "Faith is\na verb.",
-    body: "Take on spiritual assignments — acts of service, prayer, and witness — that move your faith from the page into the world.",
+    headline: "Put faith into\npractice.",
+    body: "Take on spiritual assignments — acts of service, prayer, and witness — that bring your faith to life.",
     icon: Compass,
     accent: "#1A1A1A",
   },
