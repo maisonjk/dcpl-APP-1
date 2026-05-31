@@ -563,12 +563,15 @@ export default function HomeView({
       id="home_view_wrapper"
     >
       {/* Welcome Message Greeting Section */}
-      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1A1A1A] pb-6" id="home_greeting">
+      <section className="flex flex-col gap-4 border-b border-[#1A1A1A] pb-6" id="home_greeting">
         <div>
+          <p className="font-serif text-xl font-bold tracking-tight text-[#1A1A1A]">
+            {(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}
+          </p>
           <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A]">
-            {(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}, <span className="font-normal">{stats.username}</span>
+            {stats.username}
           </h2>
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mt-1.5 font-sans">
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mt-1.5 font-sans whitespace-nowrap">
             May your path be clear today. Find rest in the silence.
           </p>
         </div>
