@@ -213,60 +213,62 @@ export default function App() {
 
       {/* Top Main Navigation Header */}
       <header className="sticky top-0 z-30 bg-[#F9F8F6]/90 backdrop-blur-md border-b-2 border-[#1A1A1A]" id="navigation_main_header">
-        <div className="flex justify-between items-baseline w-full px-5 py-5">
-          <div className="flex items-baseline gap-6">
+        <div className="flex justify-between items-center w-full px-5 py-4">
+          <div className="flex items-center gap-3">
             {tabHistory.length > 0 && !isStudyMode && !isCurriculumMode ? (
               <button
                 onClick={goBack}
-                className="flex items-center gap-1 text-[#1A1A1A] hover:opacity-70 transition-opacity"
+                className="flex items-center gap-1.5 text-[#1A1A1A] hover:opacity-70 transition-opacity"
                 title="Go back"
               >
-                <ChevronLeft className="w-5 h-5" />
-                <span className="font-serif text-3xl font-bold tracking-tight uppercase">DCPL</span>
+                <ChevronLeft className="w-4 h-4" />
+                <span className="font-serif text-2xl font-bold tracking-tight uppercase">DCPL</span>
               </button>
             ) : (
               <button
                 onClick={() => { setActiveTab("home"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-                className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A] hover:opacity-85 transition-opacity uppercase"
+                className="font-serif text-2xl font-bold tracking-tight text-[#1A1A1A] hover:opacity-80 transition-opacity uppercase"
               >
                 DCPL
               </button>
             )}
-            <span className="hidden md:inline text-[10px] font-mono uppercase tracking-[0.2em] text-neutral-400">Spiritual Ledger</span>
+            <span className="hidden sm:inline text-[10px] font-sans font-semibold uppercase tracking-[0.12em] text-neutral-300">Daily Devotion</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] font-sans uppercase tracking-widest text-[#1A1A1A]">
-            <span className="hidden sm:flex items-center gap-2"><span className="w-2 h-2 bg-green-600 rounded-full"></span> Ledger Active</span>
+          <div className="flex items-center gap-3 text-xs font-sans text-neutral-500">
+            <span className="hidden sm:flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+              Online
+            </span>
             {user ? (
               <>
-                <span className="hidden sm:inline font-bold text-neutral-600">{user.username}</span>
+                <span className="hidden sm:inline text-[10px] font-semibold text-neutral-500 uppercase tracking-[0.12em]">{user.username}</span>
                 <button
                   onClick={logout}
-                  className="hover:text-black hover:underline flex items-center gap-1 transition-colors font-bold"
+                  className="flex items-center gap-1 text-neutral-400 hover:text-[#1A1A1A] transition-colors"
                 >
                   <LogOut className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Sign Out</span>
                 </button>
               </>
             ) : (
               <>
                 <button
                   onClick={() => { setLoginMode("login"); setShowLogin(true); }}
-                  className="hover:underline font-bold transition-colors"
+                  className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-500 hover:text-[#1A1A1A] transition-colors"
                 >
                   Sign In
                 </button>
                 <button
                   onClick={() => { setLoginMode("register"); setShowLogin(true); }}
-                  className="bg-[#1A1A1A] text-white px-3 py-1.5 text-[10px] font-bold tracking-widest hover:bg-neutral-800 transition"
+                  className="bg-[#1A1A1A] text-white px-3 py-1.5 text-[10px] font-bold tracking-wider hover:bg-neutral-700 transition"
                 >
-                  Join Free
+                  Join
                 </button>
               </>
             )}
             <button
               onClick={() => setShowSettings(true)}
-              className="hover:text-black hover:underline flex items-center gap-1 transition-colors font-bold"
+              className="text-neutral-400 hover:text-[#1A1A1A] transition-colors"
             >
               <Settings className="w-3.5 h-3.5" />
             </button>
