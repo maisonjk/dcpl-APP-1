@@ -129,8 +129,8 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
               <div className="mb-4" id="mission_icon_box">
                 {renderIcon(mission.iconType)}
               </div>
-              <h3 className="font-serif text-xl font-bold text-[#1A1A1A] mb-2">{mission.title}</h3>
-              <p className="text-xs text-neutral-500 leading-relaxed mb-8">
+              <h3 className="font-serif text-base font-bold text-[#1A1A1A] mb-2">{mission.title}</h3>
+              <p className="text-xs text-neutral-500 leading-relaxed mb-4">
                 {mission.description}
               </p>
             </div>

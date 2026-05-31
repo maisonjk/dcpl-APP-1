@@ -589,7 +589,7 @@ export default function HomeView({
         {/* Left 7 Columns - Scripture card and dynamic progress tracker */}
         <div className="lg:col-span-7 space-y-8" id="home_col_left">
           {/* Daily Verse Card */}
-          <div className="bg-white border border-[#1A1A1A] rounded-none p-8 relative overflow-hidden" id="card_daily_verse">
+          <div className="bg-white border border-[#1A1A1A] rounded-none p-5 relative overflow-hidden" id="card_daily_verse">
             {/* Watermark decorative icon block */}
             <div className="absolute -right-6 -top-6 opacity-[0.02] select-none pointer-events-none">
               <BookOpen className="w-48 h-48 text-[#1A1A1A]" />
@@ -641,20 +641,20 @@ export default function HomeView({
               </div>
 
               {/* Call to actions to study scripture */}
-              <div className="pt-4 flex flex-col sm:flex-row gap-3" id="verse_actions">
+              <div className="pt-4 flex flex-col gap-2" id="verse_actions">
                 <button
                   onClick={onLaunchStudy}
-                  className="bg-[#1A1A1A] hover:bg-neutral-800 text-white font-sans text-[11px] font-bold uppercase tracking-widest py-3.5 px-6 rounded-none transition-all duration-200 flex-1"
+                  className="bg-[#1A1A1A] hover:bg-neutral-800 text-white font-sans text-[11px] font-bold uppercase tracking-widest py-3 px-6 rounded-none transition-all duration-200 w-full"
                   id="btn_launch_study"
                 >
                   Start Bible Study
                 </button>
                 <button
                   onClick={() => onNavigateTab("path")}
-                  className="bg-transparent border border-[#1A1A1A] text-[#1A1A1A] hover:bg-neutral-50 font-sans text-[11px] font-bold uppercase tracking-widest py-3.5 px-6 rounded-none transition-all"
+                  className="text-[10px] font-sans font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-700 py-1 transition-all text-center"
                   id="btn_full_context"
                 >
-                  Growth Journey Context
+                  View Growth Journey →
                 </button>
               </div>
             </div>

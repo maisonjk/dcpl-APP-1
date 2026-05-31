@@ -318,7 +318,7 @@ export default function App() {
                           className="p-6 border border-neutral-200 hover:border-[#1A1A1A] bg-white text-left transition group"
                         >
                           <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">{plan.theme}</span>
-                          <h3 className="font-serif text-xl font-bold text-[#1A1A1A] mb-1">{plan.title}</h3>
+                          <h3 className="font-serif text-base font-bold text-[#1A1A1A] mb-1">{plan.title}</h3>
                           <p className="text-xs text-neutral-500 font-sans mb-3">{plan.description}</p>
                           <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">{plan.totalDays} days →</span>
                         </button>
@@ -330,7 +330,7 @@ export default function App() {
                         className="p-6 border border-neutral-200 hover:border-[#1A1A1A] bg-white text-left transition group"
                       >
                         <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">Discipleship Curriculum</span>
-                        <h3 className="font-serif text-xl font-bold text-[#1A1A1A] mb-1">Growing in Christ</h3>
+                        <h3 className="font-serif text-base font-bold text-[#1A1A1A] mb-1">Growing in Christ</h3>
                         <p className="text-xs text-neutral-500 font-sans mb-3">4 modules · 11 topics · 33 lessons on discipleship, theology, and spiritual formation.</p>
                         <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">33 lessons →</span>
                       </button>
@@ -349,7 +349,7 @@ export default function App() {
                         <div className="flex justify-between items-start mb-5">
                           <div>
                             <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">{plan.theme}</span>
-                            <h3 className="font-serif text-2xl font-bold text-[#1A1A1A]">{plan.title}</h3>
+                            <h3 className="font-serif text-lg font-bold text-[#1A1A1A]">{plan.title}</h3>
                             <p className="text-xs text-neutral-500 font-sans mt-1">{plan.description}</p>
                           </div>
                           <span className="text-[9px] bg-[#1A1A1A] text-white px-2 py-0.5 font-bold uppercase tracking-wider font-sans whitespace-nowrap ml-4">Active</span>
@@ -410,7 +410,7 @@ export default function App() {
                         <div className="flex justify-between items-start mb-5">
                           <div>
                             <span className="text-[10px] font-bold font-sans uppercase text-neutral-400 tracking-widest block mb-1">Discipleship Curriculum</span>
-                            <h3 className="font-serif text-2xl font-bold text-[#1A1A1A]">Growing in Christ</h3>
+                            <h3 className="font-serif text-lg font-bold text-[#1A1A1A]">Growing in Christ</h3>
                             <p className="text-xs text-neutral-500 font-sans mt-1">4 modules · 11 topics · 33 lessons.</p>
                           </div>
                           <span className="text-[9px] bg-[#1A1A1A] text-white px-2 py-0.5 font-bold uppercase tracking-wider font-sans whitespace-nowrap ml-4">Active</span>
