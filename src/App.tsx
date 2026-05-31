@@ -552,7 +552,7 @@ export default function App() {
             title="Bible"
           >
             <BookOpen className={`w-5 h-5 ${activeTab === "bible" || isStudyMode ? "stroke-[2.5]" : ""}`} />
-            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Reading</span>
+            <span className="text-[10px] font-sans uppercase tracking-wider font-bold">Study</span>
           </button>
           <button
             onClick={() => { setActiveTab("path"); setIsStudyMode(false); setIsCurriculumMode(false); }}
