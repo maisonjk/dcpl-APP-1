@@ -15,9 +15,11 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
+import { READING_PLANS } from "../data";
 
 type Stage =
   | "splash"
+  | "planpicker"
   | "slides"
   | "auth"
   | "profile"
@@ -26,7 +28,7 @@ type Stage =
   | "done";
 
 interface OnboardingFlowProps {
-  onComplete: (username: string) => void;
+  onComplete: (username: string, planId: string) => void;
 }
 
 // ─── Splash ───────────────────────────────────────────────────────────────────
@@ -559,12 +561,98 @@ function Tutorial({ onDone }: { onDone: () => void }) {
   );
 }
 
+// ─── Plan Picker ──────────────────────────────────────────────────────────────
+const CURRICULUM_OPTION = {
+  id: "curriculum",
+  title: "Growing in Christ",
+  description: "4 modules · 11 topics · 33 lessons on discipleship, theology, and spiritual formation.",
+  totalDays: 33,
+  theme: "Discipleship Curriculum",
+};
+
+function PlanPicker({ onDone }: { onDone: (planId: string) => void }) {
+  const [selected, setSelected] = useState<string | null>(null);
+  const allPlans = [...READING_PLANS, CURRICULUM_OPTION];
+
+  return (
+    <div className="flex flex-col h-full bg-[#F9F8F6]">
+      <div className="px-8 pt-8 pb-4">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-400 font-sans mb-1">
+          Step 1
+        </p>
+        <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A] leading-tight">
+          Choose your<br />study plan.
+        </h2>
+        <p className="text-sm text-neutral-400 font-sans mt-2 leading-relaxed">
+          Pick one to start with — you can always switch later.
+        </p>
+      </div>
+
+      <div className="flex-1 px-8 py-4 space-y-3 overflow-y-auto">
+        {allPlans.map((plan) => {
+          const isSelected = selected === plan.id;
+          return (
+            <button
+              key={plan.id}
+              onClick={() => setSelected(plan.id)}
+              className={`w-full text-left p-5 border-2 transition-all ${
+                isSelected
+                  ? "border-[#1A1A1A] bg-white shadow-[3px_3px_0px_0px_rgba(26,26,26,1)]"
+                  : "border-neutral-200 bg-white hover:border-neutral-400"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400 font-sans mb-1">
+                    {plan.theme}
+                  </p>
+                  <p className="font-serif text-base font-bold text-[#1A1A1A] leading-snug">
+                    {plan.title}
+                  </p>
+                  <p className="text-xs text-neutral-500 font-sans mt-1.5 leading-relaxed">
+                    {plan.description}
+                  </p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400 font-sans mt-2">
+                    {plan.totalDays} {plan.id === "curriculum" ? "lessons" : "days"}
+                  </p>
+                </div>
+                <div className={`w-5 h-5 border-2 flex-shrink-0 flex items-center justify-center mt-0.5 transition-colors ${
+                  isSelected ? "border-[#1A1A1A] bg-[#1A1A1A]" : "border-neutral-200"
+                }`}>
+                  {isSelected && <Check className="w-3 h-3 text-white" />}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="px-8 pb-12 pt-4 space-y-3">
+        <button
+          onClick={() => selected && onDone(selected)}
+          disabled={!selected}
+          className="w-full bg-[#1A1A1A] text-white py-3.5 text-xs font-bold uppercase tracking-wider hover:bg-neutral-800 transition disabled:opacity-30 flex items-center justify-center gap-2"
+        >
+          Start this plan <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => onDone("none")}
+          className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-300 hover:text-neutral-500 transition-colors py-2 text-center"
+        >
+          I'll choose later
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Orchestrator ─────────────────────────────────────────────────────────────
 export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const [stage, setStage] = useState<Stage>("splash");
   const [resolvedName, setResolvedName] = useState("Friend");
 
   const advance = (next: Stage) => setStage(next);
+  const finish = (planId: string) => onComplete(resolvedName, planId);
 
   return (
     <div className="bg-neutral-300 min-h-screen flex items-start justify-center">
@@ -602,7 +690,13 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
           {stage === "tutorial" && (
             <motion.div key="tutorial" className="absolute inset-0" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-              <Tutorial onDone={() => { advance("done"); onComplete(resolvedName); }} />
+              <Tutorial onDone={() => advance("planpicker")} />
+            </motion.div>
+          )}
+
+          {stage === "planpicker" && (
+            <motion.div key="planpicker" className="absolute inset-0" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              <PlanPicker onDone={(planId) => { advance("done"); finish(planId); }} />
             </motion.div>
           )}
         </AnimatePresence>

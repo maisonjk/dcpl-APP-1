@@ -214,9 +214,13 @@ export default function App() {
   if (!hasOnboarded) {
     return (
       <OnboardingFlow
-        onComplete={(name) => {
+        onComplete={(name, planId) => {
           const updated = { ...stats, username: name };
           handleUpdateStats(updated);
+          if (planId && planId !== "none") {
+            setActivePlanId(planId);
+            localStorage.setItem("dcpl_active_plan_id", planId);
+          }
           localStorage.setItem("dcpl_onboarded", "true");
           setHasOnboarded(true);
         }}
