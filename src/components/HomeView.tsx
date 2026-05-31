@@ -585,9 +585,7 @@ export default function HomeView({
       </section>
 
       {/* Main Grid: Left column layout for Scripture + checklist; Right column for Bento stats & Accountability circle */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" id="home_dashboard_grid">
-        {/* Left 7 Columns - Scripture card and dynamic progress tracker */}
-        <div className="lg:col-span-7 space-y-8" id="home_col_left">
+      <div className="space-y-6" id="home_dashboard_grid">
           {/* Daily Verse Card */}
           <div className="bg-white border border-[#1A1A1A] rounded-none p-5 relative overflow-hidden" id="card_daily_verse">
             {/* Watermark decorative icon block */}
@@ -661,7 +659,7 @@ export default function HomeView({
           </div>
 
           {/* Quick Access Grid Links for Mobile/Tablet users */}
-          <div className="grid grid-cols-2 gap-4 md:hidden" id="mobile_quick_links">
+          <div className="flex flex-col gap-3" id="mobile_quick_links">
             <button
               onClick={() => onNavigateTab("mission")}
               className="bg-white border border-[#1A1A1A] p-5 rounded-none flex items-center gap-3 text-left active:bg-neutral-50"
@@ -838,10 +836,7 @@ export default function HomeView({
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right 5 Columns - Bento widgets, streak card milestones, accountability community bubble circle group */}
-        <div className="lg:col-span-5 space-y-8" id="home_col_right">
           {/* Daily Affirmation rotating scriptural card */}
           <div className="bg-[#F9F8F6] border border-[#1A1A1A] rounded-none p-6 text-left relative overflow-hidden" id="bento_daily_affirmation">
             <div className="flex justify-between items-center border-b border-neutral-300 pb-3 mb-4" id="affirmation_heading">
@@ -973,7 +968,6 @@ export default function HomeView({
               "Be still, and know that I am God." — Psalm 46:10
             </p>
           </div>
-        </div>
       </div>
     </motion.div>
   );

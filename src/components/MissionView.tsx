@@ -118,7 +118,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
       </section>
 
       {/* Grid of Missions Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[#1A1A1A] border-2 border-[#1A1A1A]" id="mission_actions_grid">
+      <div className="grid grid-cols-1 gap-px bg-[#1A1A1A] border-2 border-[#1A1A1A]" id="mission_actions_grid">
         {missions.map((mission) => (
           <div
             key={mission.id}
