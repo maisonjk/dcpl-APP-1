@@ -396,7 +396,7 @@ export default function App() {
                           <span className="text-[9px] font-bold font-sans uppercase tracking-widest text-neutral-400 block mb-1">Today — {verse.reference}</span>
                           <p className="text-xs text-neutral-600 italic font-serif line-clamp-2 leading-relaxed">{verse.verseLines[0]}</p>
                         </div>
-                        <div className="flex gap-2 pt-4 border-t border-gray-100">
+                        <div className="flex flex-col gap-2 pt-4 border-t border-gray-100">
                           <button
                             onClick={() => { setActiveVerse(verse); setIsStudyMode(true); }}
                             className="bg-[#1A1A1A] text-white hover:bg-neutral-800 text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none text-center transition flex-1 flex items-center justify-center gap-1.5"
@@ -414,13 +414,13 @@ export default function App() {
                                 setBibleToast(`Day ${currentDay} complete — Day ${next} unlocked`);
                                 setTimeout(() => setBibleToast(null), 3000);
                               }}
-                              className="border border-[#1A1A1A] hover:bg-neutral-50 text-[#1A1A1A] text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none transition"
+                              className="border border-[#1A1A1A] hover:bg-neutral-50 text-[#1A1A1A] text-[10px] uppercase font-bold tracking-widest px-4 py-3 rounded-none transition w-full text-center"
                             >
                               ✓ Done for Today
                             </button>
                           )}
                           {currentDay >= plan.totalDays && (
-                            <span className="border border-neutral-200 text-neutral-400 text-[10px] uppercase font-bold tracking-widest px-4 py-3">
+                            <span className="border border-neutral-200 text-neutral-400 text-[10px] uppercase font-bold tracking-widest px-4 py-3 text-center block">
                               Completed ✓
                             </span>
                           )}
@@ -476,16 +476,16 @@ export default function App() {
                         })),
                         ...(activePlanId !== "curriculum" ? [{ id: "curriculum", title: "Growing in Christ", subtitle: "33 lessons · Discipleship Curriculum" }] : []),
                       ].map(p => (
-                        <div key={p.id} className="flex items-center justify-between p-4 border border-neutral-200 bg-white">
+                        <div key={p.id} className="flex flex-col gap-3 p-4 border border-neutral-200 bg-white">
                           <div>
                             <p className="text-xs font-bold text-neutral-700">{p.title}</p>
                             <p className="text-[10px] text-neutral-400">{p.subtitle}</p>
                           </div>
                           <button
                             onClick={() => switchPlan(p.id, p.title)}
-                            className="text-[9px] font-bold uppercase tracking-widest border border-neutral-300 px-3 py-1.5 hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition text-neutral-500"
+                            className="text-[9px] font-bold uppercase tracking-widest border border-neutral-300 px-3 py-2 hover:border-[#1A1A1A] hover:text-[#1A1A1A] transition text-neutral-500 w-full text-center"
                           >
-                            Switch
+                            Switch to this plan
                           </button>
                         </div>
                       ))}
