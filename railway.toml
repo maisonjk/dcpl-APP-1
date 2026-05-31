@@ -1,5 +1,5 @@
 [build]
-builder = "dockerfile"
+buildCommand = "npm install && npm run build"
 
 [deploy]
 startCommand = "npm run server:prod"
