@@ -116,7 +116,7 @@ const getHabitHistoryData = (checklist: { prayer: boolean; word: boolean; obedie
   return data;
 };
 
-function AccountabilityCircle() {
+function AccountabilityCircle({ onNavigateTab }: { onNavigateTab: (tabId: string) => void }) {
   const { user } = useAuth();
   const [partners, setPartners] = useState<AccountabilityPartner[]>([]);
   const [loading, setLoading] = useState(false);
@@ -566,7 +566,7 @@ export default function HomeView({
       <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1A1A1A] pb-6" id="home_greeting">
         <div>
           <h2 className="font-serif text-3xl font-bold tracking-tight text-[#1A1A1A]">
-            {(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}, <span className="italic">{stats.username}</span>
+            {(() => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; })()}, <span className="font-normal">{stats.username}</span>
           </h2>
           <p className="text-xs uppercase tracking-widest text-neutral-500 mt-1.5 font-sans">
             May your path be clear today. Find rest in the silence.
@@ -575,11 +575,11 @@ export default function HomeView({
         <div className="flex items-center gap-4 bg-white px-5 py-2.5 border border-[#1A1A1A] rounded-none" id="stats_quick_badge">
           <div className="text-left border-r border-neutral-200 pr-5">
             <span className="block text-[9px] uppercase font-bold tracking-widest text-neutral-400 font-sans">Level</span>
-            <span className="font-serif text-xl font-bold text-[#1A1A1A]">{stats.level}</span>
+            <span className="font-sans text-2xl font-bold text-[#1A1A1A]">{stats.level}</span>
           </div>
           <div className="text-left">
             <span className="block text-[9px] uppercase font-bold tracking-widest text-neutral-400 font-sans">Streak</span>
-            <span className="font-serif text-xl font-bold text-[#1A1A1A]">{stats.currentStreak} Days</span>
+            <span className="font-sans text-2xl font-bold text-[#1A1A1A]">{stats.currentStreak} Days</span>
           </div>
         </div>
       </section>
@@ -607,7 +607,7 @@ export default function HomeView({
 
               {/* The core scripture passage italicized */}
               <div className="space-y-3" id="verse_body">
-                <blockquote className="font-serif text-xl text-[#1A1A1A] leading-relaxed italic text-left">
+                <blockquote className="font-serif text-sm text-[#1A1A1A] leading-relaxed italic text-left line-clamp-4">
                   {verse.verseLines[0]}
                 </blockquote>
               </div>
@@ -869,7 +869,7 @@ export default function HomeView({
                 transition={{ duration: 0.25 }}
                 className="space-y-4"
               >
-                <p className="font-serif text-lg leading-relaxed text-[#1A1A1A] italic">
+                <p className="font-serif text-sm leading-relaxed text-[#1A1A1A] italic">
                   "{AFFIRMATIONS[affirmationIndex].text}"
                 </p>
                 <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1.5">
@@ -885,12 +885,12 @@ export default function HomeView({
           </div>
 
           {/* Action Step invitation journal widget card */}
-          <div className="bg-white p-8 border border-[#1A1A1A] rounded-none flex flex-col justify-between" id="bento_action_step">
+          <div className="bg-white p-8 border border-[#1A1A1A] rounded-none flex flex-col justify-between overflow-hidden" id="bento_action_step">
             <div>
               <span className="font-sans text-[10px] text-neutral-500 uppercase tracking-widest font-bold block mb-3">
                 Today's Action Step
               </span>
-              <p className="font-serif text-xl font-bold text-[#1A1A1A] leading-snug mb-6 italic">
+              <p className="font-serif text-base font-semibold text-[#1A1A1A] leading-snug mb-6 italic">
                 "{verse.actionStep}"
               </p>
             </div>
@@ -966,7 +966,7 @@ export default function HomeView({
           </div>
 
           {/* Accountability Circle */}
-          <AccountabilityCircle />
+          <AccountabilityCircle onNavigateTab={onNavigateTab} />
 
           <div className="text-center px-4">
             <p className="font-serif text-xs italic text-neutral-400">

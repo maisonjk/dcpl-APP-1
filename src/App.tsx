@@ -484,49 +484,55 @@ export default function App() {
       </main>
 
       {/* Bottom Tab Navigation */}
-      <nav className="sticky bottom-0 mt-auto z-40 bg-[#F9F8F6] border-t-2 border-[#1A1A1A] py-4 px-4 flex justify-around items-center" id="sticky_bottom_nav">
+      <nav className="sticky bottom-0 mt-auto z-40 bg-[#F9F8F6] border-t-2 border-[#1A1A1A] py-2 px-2 flex justify-around items-center" id="sticky_bottom_nav">
         <div className="flex justify-around items-center w-full">
           <button
             onClick={() => { setActiveTab("home"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === "home" && !isStudyMode ? "text-[#1A1A1A] font-bold scale-105" : "text-neutral-400 hover:text-neutral-600"}`}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-all ${activeTab === "home" && !isStudyMode ? "text-[#1A1A1A]" : "text-neutral-400 hover:text-neutral-600"}`}
+            title="Home"
           >
-            <Home className="w-5 h-5" />
-            <span className="text-[9px] font-sans uppercase tracking-widest font-bold">Home</span>
+            <Home className={`w-5 h-5 ${activeTab === "home" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
+            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Home</span>
           </button>
           <button
             onClick={() => { setActiveTab("bible"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === "bible" || isStudyMode ? "text-[#1A1A1A] font-bold scale-105" : "text-neutral-400 hover:text-neutral-600"}`}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-all ${activeTab === "bible" || isStudyMode ? "text-[#1A1A1A]" : "text-neutral-400 hover:text-neutral-600"}`}
+            title="Bible"
           >
-            <BookOpen className="w-5 h-5" />
-            <span className="text-[9px] font-sans uppercase tracking-widest font-bold">Bible</span>
+            <BookOpen className={`w-5 h-5 ${activeTab === "bible" || isStudyMode ? "stroke-[2.5]" : ""}`} />
+            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Bible</span>
           </button>
           <button
             onClick={() => { setActiveTab("path"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === "path" && !isStudyMode ? "text-[#1A1A1A] font-bold scale-105" : "text-neutral-400 hover:text-neutral-600"}`}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-all ${activeTab === "path" && !isStudyMode ? "text-[#1A1A1A]" : "text-neutral-400 hover:text-neutral-600"}`}
+            title="Path"
           >
-            <TrendingUp className="w-5 h-5" />
-            <span className="text-[9px] font-sans uppercase tracking-widest font-bold">Path</span>
+            <TrendingUp className={`w-5 h-5 ${activeTab === "path" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
+            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Path</span>
           </button>
           <button
             onClick={() => { setActiveTab("mission"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === "mission" && !isStudyMode ? "text-[#1A1A1A] font-bold scale-105" : "text-neutral-400 hover:text-neutral-600"}`}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-all ${activeTab === "mission" && !isStudyMode ? "text-[#1A1A1A]" : "text-neutral-400 hover:text-neutral-600"}`}
+            title="Mission"
           >
-            <Compass className="w-5 h-5" />
-            <span className="text-[9px] font-sans uppercase tracking-widest font-bold">Mission</span>
+            <Compass className={`w-5 h-5 ${activeTab === "mission" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
+            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Mission</span>
           </button>
           <button
             onClick={() => { setActiveTab("prayer"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === "prayer" && !isStudyMode ? "text-[#1A1A1A] font-bold scale-105" : "text-neutral-400 hover:text-neutral-600"}`}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-all ${activeTab === "prayer" && !isStudyMode ? "text-[#1A1A1A]" : "text-neutral-400 hover:text-neutral-600"}`}
+            title="Prayer"
           >
-            <BookMarked className="w-5 h-5" />
-            <span className="text-[9px] font-sans uppercase tracking-widest font-bold">Prayer</span>
+            <BookMarked className={`w-5 h-5 ${activeTab === "prayer" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
+            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Prayer</span>
           </button>
           <button
             onClick={() => { setActiveTab("pricing"); setIsStudyMode(false); setIsCurriculumMode(false); }}
-            className={`flex flex-col items-center gap-1 transition-all ${activeTab === "pricing" && !isStudyMode ? "text-[#1A1A1A] font-bold scale-105" : "text-neutral-400 hover:text-neutral-600"}`}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 transition-all ${activeTab === "pricing" && !isStudyMode ? "text-[#1A1A1A]" : "text-neutral-400 hover:text-neutral-600"}`}
+            title="Plans"
           >
-            <Zap className="w-5 h-5" />
-            <span className="text-[9px] font-sans uppercase tracking-widest font-bold">Plans</span>
+            <Zap className={`w-5 h-5 ${activeTab === "pricing" && !isStudyMode ? "stroke-[2.5]" : ""}`} />
+            <span className="text-[8px] font-sans uppercase tracking-wider font-bold">Plans</span>
           </button>
         </div>
       </nav>
