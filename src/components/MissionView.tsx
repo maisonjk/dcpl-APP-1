@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { Sparkles, Check, Heart, BookOpen, MessageCircle, Users, HelpCircle, Trophy, Zap } from "lucide-react";
 import { Mission, UserStats } from "../types";
 import { DEFAULT_MISSIONS } from "../data";
+import { api } from "../api";
+import { useAuth } from "../auth/AuthContext";
 
 interface MissionViewProps {
   stats: UserStats;
@@ -10,48 +12,46 @@ interface MissionViewProps {
 }
 
 export default function MissionView({ stats, onUpdateStats }: MissionViewProps) {
+  const { user } = useAuth();
   const [missions, setMissions] = useState<Mission[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Load state or saves
   useEffect(() => {
-    const saved = localStorage.getItem("sanctuary_missions");
-    if (saved) {
-      try {
-        setMissions(JSON.parse(saved));
-      } catch (e) {
-        setMissions(DEFAULT_MISSIONS);
-      }
-    } else {
+    if (!user) {
       setMissions(DEFAULT_MISSIONS);
+      return;
     }
-  }, []);
+    api.missions.list().then((statusMap) => {
+      setMissions(
+        DEFAULT_MISSIONS.map((m) => ({
+          ...m,
+          status: (statusMap[m.id] as "idle" | "active" | "completed") || "idle",
+        }))
+      );
+    }).catch(() => setMissions(DEFAULT_MISSIONS));
+  }, [user]);
 
-  const saveMissions = (updated: Mission[]) => {
+  const saveMissions = (updated: Mission[], changedId: string, changedStatus: string) => {
     setMissions(updated);
-    localStorage.setItem("sanctuary_missions", JSON.stringify(updated));
+    if (user) {
+      api.missions.update(changedId, changedStatus).catch(console.error);
+    }
   };
 
   const handleStartMission = (missionId: string) => {
-    const updated = missions.map((m) => {
-      if (m.id === missionId) {
-        return { ...m, status: "active" as const };
-      }
-      return m;
-    });
-    saveMissions(updated);
+    const updated = missions.map((m) =>
+      m.id === missionId ? { ...m, status: "active" as const } : m
+    );
+    saveMissions(updated, missionId, "active");
     setToastMessage("Mission set to active! Step out in divine confidence today.");
     setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleCompleteMission = (missionId: string) => {
-    const updated = missions.map((m) => {
-      if (m.id === missionId) {
-        return { ...m, status: "completed" as const };
-      }
-      return m;
-    });
-    saveMissions(updated);
+    const updated = missions.map((m) =>
+      m.id === missionId ? { ...m, status: "completed" as const } : m
+    );
+    saveMissions(updated, missionId, "completed");
 
     const newCompletedCount = stats.completedMissionsCount + 1;
     let newLevel = stats.level;
@@ -71,7 +71,10 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
 
   const handleResetMissions = () => {
     const reset = missions.map((m) => ({ ...m, status: "idle" as const }));
-    saveMissions(reset);
+    setMissions(reset);
+    if (user) {
+      reset.forEach((m) => api.missions.update(m.id, "idle").catch(console.error));
+    }
     setToastMessage("Missions reset. Ready to serve again!");
     setTimeout(() => setToastMessage(null), 2500);
   };
@@ -257,7 +260,7 @@ export default function MissionView({ stats, onUpdateStats }: MissionViewProps) 
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 left-6 right-6 md:left-auto md:right-6 bg-[#1A1A1A] text-white p-5 rounded-none shadow-[4px_4px_0px_0px_rgba(26,26,26,0.3)] flex items-center justify-between gap-4 max-w-sm z-50 text-left border-2 border-white"
+            className="fixed bottom-28 left-4 right-4 sm:max-w-[358px] sm:left-1/2 sm:-translate-x-1/2 bg-[#1A1A1A] text-white p-5 rounded-none shadow-[4px_4px_0px_0px_rgba(26,26,26,0.3)] flex items-center justify-between gap-4 z-50 text-left border-2 border-white"
             id="mission_toast"
           >
             <div className="flex items-center gap-2.5">

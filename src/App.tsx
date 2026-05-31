@@ -419,7 +419,7 @@ export default function App() {
       </main>
 
       {/* Bottom Tab Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#F9F8F6] border-t-2 border-[#1A1A1A] py-4 px-4 flex justify-around items-center" id="sticky_bottom_nav">
+      <nav className="sticky bottom-0 mt-auto z-40 bg-[#F9F8F6] border-t-2 border-[#1A1A1A] py-4 px-4 flex justify-around items-center" id="sticky_bottom_nav">
         <div className="flex justify-around items-center w-full">
           <button
             onClick={() => { setActiveTab("home"); setIsStudyMode(false); setIsCurriculumMode(false); }}
@@ -581,7 +581,7 @@ export default function App() {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 left-6 right-6 md:left-auto md:right-6 bg-[#1A1A1A] text-white p-5 rounded-none shadow-[4px_4px_0px_0px_rgba(26,26,26,0.3)] flex items-center justify-between gap-4 max-w-sm z-50 border-2 border-white"
+            className="fixed bottom-28 left-4 right-4 sm:max-w-[358px] sm:left-1/2 sm:-translate-x-1/2 bg-[#1A1A1A] text-white p-5 rounded-none shadow-[4px_4px_0px_0px_rgba(26,26,26,0.3)] flex items-center justify-between gap-4 z-50 border-2 border-white"
           >
             <span className="text-xs font-bold font-sans uppercase tracking-wider">{notifToast}</span>
             <button onClick={() => setNotifToast(null)} className="text-neutral-400 hover:text-white text-[9px] font-mono tracking-widest uppercase transition">[×]</button>
@@ -596,7 +596,7 @@ export default function App() {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-24 left-6 right-6 md:left-auto md:right-6 bg-[#1A1A1A] text-white p-5 rounded-none shadow-[4px_4px_0px_0px_rgba(26,26,26,0.3)] flex items-center justify-between gap-4 max-w-sm z-50 border-2 border-white"
+            className="fixed bottom-28 left-4 right-4 sm:max-w-[358px] sm:left-1/2 sm:-translate-x-1/2 bg-[#1A1A1A] text-white p-5 rounded-none shadow-[4px_4px_0px_0px_rgba(26,26,26,0.3)] flex items-center justify-between gap-4 z-50 border-2 border-white"
           >
             <div className="flex items-center gap-2.5">
               <BookOpen className="w-4 h-4 text-white flex-shrink-0" />
