@@ -14,11 +14,12 @@ interface LoginModalProps {
 
 export default function LoginModal({ onClose, initialMode = "login", resetToken }: LoginModalProps) {
   const { login, register } = useAuth();
-  const [mode, setMode] = useState<Mode>(resetToken ? "reset" : initialMode);
+  const tokenFromUrl = resetToken || new URLSearchParams(window.location.search).get("reset_token") || "";
+  const [mode, setMode] = useState<Mode>(tokenFromUrl ? "reset" : initialMode);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState(resetToken || "");
+  const [token, setToken] = useState(tokenFromUrl);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -124,7 +125,7 @@ export default function LoginModal({ onClose, initialMode = "login", resetToken 
             </div>
           )}
 
-          {mode === "reset" && (
+          {mode === "reset" && !tokenFromUrl && (
             <div className="relative">
               <span className="absolute left-3 top-3 text-neutral-400"><Mail className="w-4 h-4" /></span>
               <input type="text" placeholder="Reset token" value={token}

@@ -809,10 +809,8 @@ export default function App() {
         {showLogin && (
           <LoginModal
             initialMode={loginMode}
-            resetToken={new URLSearchParams(window.location.search).get("reset_token") || undefined}
             onClose={() => {
               setShowLogin(false);
-              // Clear the token from the URL without reloading
               const url = new URL(window.location.href);
               url.searchParams.delete("reset_token");
               window.history.replaceState({}, "", url.toString());
