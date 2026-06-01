@@ -85,8 +85,12 @@ export default function App() {
   const [isCurriculumMode, setIsCurriculumMode] = useState<boolean>(false);
   const [studyReturnToCurriculum, setStudyReturnToCurriculum] = useState<boolean>(false);
   const [showSettings, setShowSettings] = useState<boolean>(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [loginMode, setLoginMode] = useState<"login" | "register">("login");
+  const [showLogin, setShowLogin] = useState(() => {
+    return new URLSearchParams(window.location.search).has("reset_token");
+  });
+  const [loginMode, setLoginMode] = useState<"login" | "register">(() => {
+    return new URLSearchParams(window.location.search).has("reset_token") ? "login" : "login";
+  });
   const [bibleToast, setBibleToast] = useState<string | null>(null);
   const [notifToast, setNotifToast] = useState<string | null>(null);
   const showNotifToast = (msg: string) => { setNotifToast(msg); setTimeout(() => setNotifToast(null), 4000); };
@@ -805,7 +809,14 @@ export default function App() {
         {showLogin && (
           <LoginModal
             initialMode={loginMode}
-            onClose={() => setShowLogin(false)}
+            resetToken={new URLSearchParams(window.location.search).get("reset_token") || undefined}
+            onClose={() => {
+              setShowLogin(false);
+              // Clear the token from the URL without reloading
+              const url = new URL(window.location.href);
+              url.searchParams.delete("reset_token");
+              window.history.replaceState({}, "", url.toString());
+            }}
           />
         )}
       </AnimatePresence>
