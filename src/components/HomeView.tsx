@@ -777,33 +777,6 @@ export default function HomeView({
             </div>
           </div>
 
-          {/* Quick Access Grid Links for Mobile/Tablet users */}
-          <div className="flex flex-col gap-3" id="mobile_quick_links">
-            <button
-              onClick={() => onNavigateTab("mission")}
-              className="bg-white border border-[#1A1A1A] p-5 rounded-none flex items-center gap-3 text-left active:bg-neutral-50"
-            >
-              <div className="w-10 h-10 rounded-none border border-[#1A1A1A] flex items-center justify-center text-[#1A1A1A]">
-                <Compass className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="block text-xs font-semibold text-[#1A1A1A]">Missions</span>
-                <span className="text-[10px] text-neutral-400">Kingdom Action</span>
-              </div>
-            </button>
-            <button
-              onClick={() => onNavigateTab("path")}
-              className="bg-white border border-[#1A1A1A] p-5 rounded-none flex items-center gap-3 text-left active:bg-neutral-50"
-            >
-              <div className="w-10 h-10 rounded-none border border-[#1A1A1A] flex items-center justify-center text-[#1A1A1A]">
-                <TrendingUp className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="block text-xs font-semibold text-[#1A1A1A]">My Path</span>
-                <span className="text-[10px] text-neutral-400">Growth Stages</span>
-              </div>
-            </button>
-          </div>
 
           {/* Habit Accountability Checklist Status Section */}
           <div className="bg-white border border-[#1A1A1A] rounded-none p-6" id="card_habits">
@@ -1015,66 +988,6 @@ export default function HomeView({
             </button>
           </div>
 
-          {/* Growth Journey timeline summary layout card */}
-          <div className="bg-white border border-[#1A1A1A] rounded-none p-6" id="bento_path_preview">
-            <div className="flex justify-between items-center mb-6" id="path_preview_header">
-              <h3 className="font-sans text-[11px] text-[#1A1A1A] uppercase tracking-widest font-bold">
-                The Journey
-              </h3>
-              <span className="text-xs text-neutral-500 font-sans uppercase tracking-widest text-[10px] font-bold">Level {stats.level} Disciple</span>
-            </div>
-
-            {/* Compact timeline display */}
-            <div className="space-y-4 relative pl-3" id="compact_path_timeline">
-              <div className="absolute left-[20px] top-2 bottom-2 w-px bg-neutral-200" />
-
-              <div className="flex items-center gap-4 relative">
-                <div className="w-4 h-4 bg-[#1A1A1A] border border-[#1A1A1A] flex items-center justify-center z-10">
-                  <div className="w-1.5 h-1.5 bg-white" />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs font-semibold text-neutral-400 line-through">Seeker</p>
-                  <p className="text-[10px] text-neutral-400">Completed</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 relative">
-                <div className="w-4 h-4 bg-[#1A1A1A] border border-[#1A1A1A] flex items-center justify-center z-10">
-                  <div className="w-1.5 h-1.5 bg-white" />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs font-semibold text-neutral-400 line-through">Believer</p>
-                  <p className="text-[10px] text-neutral-400">Completed</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 relative">
-                <div className="w-4 h-4 bg-white border-2 border-[#1A1A1A] flex items-center justify-center z-10">
-                  <div className="w-1.5 h-1.5 bg-[#1A1A1A] animate-pulse" />
-                </div>
-                <div className="text-left">
-                  <p className="text-xs font-semibold text-[#1A1A1A]">Disciple</p>
-                  <p className="text-[11px] text-[#1A1A1A] font-medium italic">Active — see Path for progress</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 relative">
-                <div className="w-4 h-4 border border-dashed border-neutral-400 bg-white z-10" />
-                <div className="text-left">
-                  <p className="text-xs font-semibold text-neutral-400">Ambassador</p>
-                  <p className="text-[10px] text-neutral-400">Next stage — locked</p>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => onNavigateTab("path")}
-              className="w-full mt-6 py-3 border border-[#1A1A1A] font-sans text-[10px] font-bold uppercase tracking-widest text-center text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white transition-all"
-              id="details_path_trigger"
-            >
-              Analyze Growth Path
-            </button>
-          </div>
 
           {/* Accountability Circle */}
           <AccountabilityCircle onNavigateTab={onNavigateTab} />
